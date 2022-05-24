@@ -341,8 +341,11 @@
 -r:"Library/Bee/artifacts/1300b0aEDbg.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/1300b0aEDbg.dag/UnityEngine.UI.ref.dll"
 -r:"Library/Bee/artifacts/1300b0aEDbg.dag/VSSettingsProvider.ref.dll"
+"Assets/Script/BackgroundScroll.cs"
+"Assets/Script/Bullet.cs"
 "Assets/Script/InputController.cs"
 "Assets/Script/Logics.cs"
+"Assets/Script/MaterialAnimation.cs"
 "Assets/Script/TestScript.cs"
 -langversion:8.0
 

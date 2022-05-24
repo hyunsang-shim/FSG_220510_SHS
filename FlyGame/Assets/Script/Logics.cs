@@ -2,14 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Logics :MonoBehaviour
+public class Logics : MonoBehaviour
 {
-    public enum PLAYER_DIR  { NONE = 0, LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4};
-    public PLAYER_DIR DIR = PLAYER_DIR.NONE;
+    public int direction;
 
     public GameObject player;
+    public Animator animator;
+    public Animation anim;
 
-    public float speed = 10f;
+    public float baseSpeed;   // 기본 기체 이동 속도
+    float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
+    bool isSlowed = false;          // 느려진 상태인지 확인
+
 
     private static Logics instance = null;
     public static Logics Instance
@@ -25,26 +29,61 @@ public class Logics :MonoBehaviour
         if (instance == null) instance = this;
     }
 
+
     private void FixedUpdate()
     {
-        if(DIR == PLAYER_DIR.LEFT)
-        {
-            player.transform.position -= new Vector3(speed * Time.fixedDeltaTime, 0, 0);
-        }
-        else if (DIR == PLAYER_DIR.RIGHT)
-        {
-            player.transform.position += new Vector3(speed * Time.fixedDeltaTime, 0, 0);
+        SetAnimationDir();
+    }
 
-        }
-        else if (DIR == PLAYER_DIR.UP)
-        {
-            player.transform.position += new Vector3(0, speed * Time.fixedDeltaTime, 0);
 
+    public void SetDirection(int d)
+    {
+        direction = d;
+    }
+    public void SetAnimationDir()
+    {
+        switch (direction)
+        {            
+            case 2:
+            case 3:
+            case 6:
+                {
+                    animator.SetInteger("Direction", 2);
+                    break;
+                }
+            case 8:
+            case 9:
+            case 12:
+                {
+                    animator.SetInteger("Direction", 1);
+                    break;
+                }
+            default:
+                {
+                    animator.SetInteger("Direction", 0);
+                    break;
+                }
         }
-        else if (DIR == PLAYER_DIR.DOWN)
-        {
-            player.transform.position -= new Vector3(0, speed * Time.fixedDeltaTime, 0);
+        
+    }
 
-        }
+    public void SetSlowState(bool v)
+    {
+        isSlowed = v;
+    }
+
+    public bool GetSlowState()
+    {
+        return isSlowed;
+    }
+
+    public float GetSpeed()
+    {
+        return baseSpeed;
+    }
+
+    public float GetSlowedSpeed()
+    {
+        return baseSpeed * slowModifyer;
     }
 }
