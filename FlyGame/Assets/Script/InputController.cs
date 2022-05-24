@@ -84,8 +84,8 @@ public class InputController : MonoBehaviour
         }
         else direction += 0;    // 수직 중립
 
-        // 캐릭터 방향 애니메이션을 업데이트 한다
-        Logics.Instance.SetDirection(direction);
+       
+
 
         // 캐릭터 방향은 유지한 채, 이동을 막는 부분은 이쪽
         if ((isTouchRight && movementH == 1) || (isTouchLeft && movementH == -1))
@@ -93,7 +93,11 @@ public class InputController : MonoBehaviour
 
         if ((isTouchTop && movementV == 1) || (isTouchBottom && movementV == -1))
             movementV = 0;  // 입력중인 수직 이동 금지
-
+        
+        
+        // 캐릭터 방향 애니메이션을 업데이트 한다
+        Logics.Instance.SetDirection(direction);
+        Logics.Instance.SetPlayerMovement(movementH, movementV);
 
         // 감속모드 조절
         if (Input.GetKey(KeyCode.LeftShift))
@@ -115,6 +119,7 @@ public class InputController : MonoBehaviour
         if (curShotDelay < maxShotDelay)
             return;
         
+        // 플레이어 총알 패턴
         // Power에 따라 총알 변경
         switch(BulletPower)
         {
@@ -140,10 +145,10 @@ public class InputController : MonoBehaviour
                 GameObject bulletLv_4 = Instantiate(Bullet[1], ShotPoint.transform.position, transform.rotation);
                 Rigidbody2D rigidLv_4 = bulletLv_4.GetComponent<Rigidbody2D>();
                 rigidLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                GameObject bulletLLv_4 = Instantiate(Bullet[0], ShotPoint.transform.position + Vector3.left * 0.2f, transform.rotation);
+                GameObject bulletLLv_4 = Instantiate(Bullet[0], ShotPoint.transform.position + Vector3.left * 0.15f, transform.rotation);
                 Rigidbody2D rigidLLv_4 = bulletLLv_4.GetComponent<Rigidbody2D>();
                 rigidLLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                GameObject bulletRLv_4 = Instantiate(Bullet[0], ShotPoint.transform.position + Vector3.right * 0.2f, transform.rotation);
+                GameObject bulletRLv_4 = Instantiate(Bullet[0], ShotPoint.transform.position + Vector3.right * 0.15f, transform.rotation);
                 Rigidbody2D rigidRLv_4 = bulletRLv_4.GetComponent<Rigidbody2D>();
                 rigidRLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 break;
@@ -172,10 +177,7 @@ public class InputController : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (speedFlag)
-            transform.position += new Vector3(movementH, movementV, 0) * slowSpeed * Time.deltaTime;
-        else
-            transform.position += new Vector3(movementH, movementV, 0) * speed * Time.deltaTime;
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

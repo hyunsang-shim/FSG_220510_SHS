@@ -13,7 +13,8 @@ public class Logics : MonoBehaviour
     public float baseSpeed;   // 기본 기체 이동 속도
     float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
     bool isSlowed = false;          // 느려진 상태인지 확인
-
+    float totalSpeed;
+    float playerMove_H, playerMove_V;
 
     private static Logics instance = null;
     public static Logics Instance
@@ -33,6 +34,11 @@ public class Logics : MonoBehaviour
     private void FixedUpdate()
     {
         SetAnimationDir();
+        if (isSlowed)
+            transform.position += new Vector3(playerMove_H, playerMove_V, 0) * baseSpeed * Time.deltaTime;
+        else
+            transform.position += new Vector3(playerMove_H, playerMove_V, 0) * baseSpeed * Time.deltaTime;
+
     }
 
 
@@ -85,5 +91,11 @@ public class Logics : MonoBehaviour
     public float GetSlowedSpeed()
     {
         return baseSpeed * slowModifyer;
+    }
+
+    public void SetPlayerMovement(float h, float v)
+    {
+        playerMove_H = h;
+        playerMove_V = v;
     }
 }
