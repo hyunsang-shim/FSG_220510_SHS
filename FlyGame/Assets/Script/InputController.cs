@@ -7,15 +7,13 @@ public class InputController : MonoBehaviour
     float speed, slowSpeed;
     bool speedFlag;    
     int direction;
-    float movementH, movementV;
+    public float movementH, movementV;
     bool isTouchTop, isTouchBottom, isTouchLeft, isTouchRight;
     float shotDelay;
     float curShotDelay;
     public float maxShotDelay;
 
-    public GameObject[] Bullet;
     public GameObject ShotPoint;
-    public int BulletPower;
 
     private void Start()
     {
@@ -26,24 +24,6 @@ public class InputController : MonoBehaviour
     private void Update()
     {
         Move();
-        Fire();
-        Reload();
-
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.KeypadPlus))
-            ++BulletPower;
-
-        if (Input.GetKeyDown(KeyCode.KeypadMinus))
-            --BulletPower;
-
-        if (Input.GetKeyDown(KeyCode.KeypadDivide))
-            maxShotDelay += 0.1f;
-
-        if (Input.GetKeyDown(KeyCode.KeypadMultiply))
-            maxShotDelay -= 0.1f;
-
-#endif
-
     }
 
     private void Move() {
@@ -84,8 +64,6 @@ public class InputController : MonoBehaviour
         }
         else direction += 0;    // 수직 중립
 
-       
-
 
         // 캐릭터 방향은 유지한 채, 이동을 막는 부분은 이쪽
         if ((isTouchRight && movementH == 1) || (isTouchLeft && movementH == -1))
@@ -111,70 +89,7 @@ public class InputController : MonoBehaviour
 
     }
 
-    void Fire()
-    {
-        if (!Input.GetButton("Fire1") && !Input.GetKey(KeyCode.Space))
-            return;
 
-        if (curShotDelay < maxShotDelay)
-            return;
-        
-        // 플레이어 총알 패턴
-        // Power에 따라 총알 변경
-        switch(BulletPower)
-        {
-            case 1:
-                GameObject bulletLv_1 = Instantiate(Bullet[0], ShotPoint.transform.position, transform.rotation);
-                Rigidbody2D rigidLv_1 = bulletLv_1.GetComponent<Rigidbody2D>();
-                rigidLv_1.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                break;
-            case 2:
-                GameObject bulletLLv_2 = Instantiate(Bullet[0], ShotPoint.transform.position + Vector3.left * 0.1f, transform.rotation);
-                Rigidbody2D rigidLLv_2 = bulletLLv_2.GetComponent<Rigidbody2D>();
-                rigidLLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                GameObject bulletRLv_2 = Instantiate(Bullet[0], ShotPoint.transform.position + Vector3.right * 0.1f, transform.rotation);
-                Rigidbody2D rigidRLv_2 = bulletRLv_2.GetComponent<Rigidbody2D>();
-                rigidRLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                break;
-            case 3:
-                GameObject bulletLv_3 = Instantiate(Bullet[1], ShotPoint.transform.position, transform.rotation);
-                Rigidbody2D rigidLv_3 = bulletLv_3.GetComponent<Rigidbody2D>();
-                rigidLv_3.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                break;
-            case 4:
-                GameObject bulletLv_4 = Instantiate(Bullet[1], ShotPoint.transform.position, transform.rotation);
-                Rigidbody2D rigidLv_4 = bulletLv_4.GetComponent<Rigidbody2D>();
-                rigidLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                GameObject bulletLLv_4 = Instantiate(Bullet[0], ShotPoint.transform.position + Vector3.left * 0.15f, transform.rotation);
-                Rigidbody2D rigidLLv_4 = bulletLLv_4.GetComponent<Rigidbody2D>();
-                rigidLLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                GameObject bulletRLv_4 = Instantiate(Bullet[0], ShotPoint.transform.position + Vector3.right * 0.15f, transform.rotation);
-                Rigidbody2D rigidRLv_4 = bulletRLv_4.GetComponent<Rigidbody2D>();
-                rigidRLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                break;
-            case 5:
-                GameObject bulletLLv_5 = Instantiate(Bullet[1], ShotPoint.transform.position + Vector3.left * 0.15f, transform.rotation);
-                Rigidbody2D rigidLLv_5 = bulletLLv_5.GetComponent<Rigidbody2D>();
-                rigidLLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                GameObject bulletRLv_5 = Instantiate(Bullet[1], ShotPoint.transform.position + Vector3.right * 0.15f, transform.rotation);
-                Rigidbody2D rigidRLv_5 = bulletRLv_5.GetComponent<Rigidbody2D>();
-                rigidRLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                break;
-        }
-
-
-
-        
-
-        curShotDelay = 0;
-        // 총알 발사
-        
-    }
-
-    void Reload()
-    {
-        curShotDelay += Time.deltaTime;
-    }
     private void FixedUpdate()
     {
 
