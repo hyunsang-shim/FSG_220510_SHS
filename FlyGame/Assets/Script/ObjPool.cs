@@ -21,8 +21,9 @@ public class ObjPool : MonoBehaviour
     // Prefabs for PowerUps and Etc.
     public GameObject prefab_powerUps_NormalPower;
     public GameObject prefab_powerUps_FullPower;
-    public GameObject prefab_bonuses_Small;
-    public GameObject prefab_bonuses_Big;
+    public GameObject prefab_bonuses;
+    public GameObject prefab_explosion_Big;
+    public GameObject prefab_explosion_Small;
 
 
 
@@ -43,8 +44,9 @@ public class ObjPool : MonoBehaviour
     // PowerUps and Etc.
     GameObject[] powerUps_NormalPower;
     GameObject[] powerUps_FullPower;
-    GameObject[] bonuses_Small;
-    GameObject[] bonuses_Big;
+    GameObject[] bonuses;
+    GameObject[] explosion_Medium;
+    GameObject[] explosion_Small;
 
 
     GameObject[] targetPool;
@@ -65,8 +67,9 @@ public class ObjPool : MonoBehaviour
 
         powerUps_NormalPower = new GameObject[5];
         powerUps_FullPower = new GameObject[5];
-        bonuses_Small = new GameObject[30];
-        bonuses_Big = new GameObject[30];
+        bonuses = new GameObject[5];
+        explosion_Medium = new GameObject[30];
+        explosion_Small= new GameObject[30];
 
         Generate();
     }
@@ -146,16 +149,22 @@ public class ObjPool : MonoBehaviour
             powerUps_FullPower[i].SetActive(false);
         }
 
-        for (int i = 0; i < bonuses_Small.Length; i++)
+        for (int i = 0; i < bonuses.Length; i++)
         {
-            bonuses_Small[i] = Instantiate(prefab_bonuses_Small);
-            bonuses_Small[i].SetActive(false);
+            bonuses[i] = Instantiate(prefab_bonuses);
+            bonuses[i].SetActive(false);
         }
 
-        for (int i = 0; i < bonuses_Big.Length; i++)
+        for (int i = 0; i < explosion_Medium.Length; i++)
         {
-            bonuses_Big[i] = Instantiate(prefab_bonuses_Big);
-            bonuses_Big[i].SetActive(false);
+            explosion_Medium[i] = Instantiate(prefab_explosion_Big);
+            explosion_Medium[i].SetActive(false);
+        }
+
+        for (int i = 0; i < explosion_Small.Length; i++)
+        {
+            explosion_Small[i] = Instantiate(prefab_explosion_Small);
+            explosion_Small[i].SetActive(false);
         }
 
     }
@@ -201,11 +210,14 @@ public class ObjPool : MonoBehaviour
             case "powerUps_FullPower":
                 targetPool = powerUps_FullPower;
                 break;
-            case "bonuses_Small":
-                targetPool = bonuses_Small;
+            case "bonuses":
+                targetPool = bonuses;
                 break;
-            case "bonuses_Big":
-                targetPool = bonuses_Big;
+            case "explosion_Small":
+                targetPool = explosion_Small;
+                break;
+            case "explosion_Big":
+                targetPool = explosion_Medium;
                 break;
         }
 

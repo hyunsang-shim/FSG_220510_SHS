@@ -1187,8 +1187,9 @@ MonoBehaviour:
   prefab_bossBulletsC: {fileID: 6172159190807883912, guid: c2dcdd2be40741d47b8ce53f3ab67231, type: 3}
   prefab_powerUps_NormalPower: {fileID: 7375147013826768889, guid: 1d27bcffa4043914db857476c3ffcd44, type: 3}
   prefab_powerUps_FullPower: {fileID: 7903182773899973236, guid: 09f124f5a3d25cb478e3cbc9f16e625d, type: 3}
-  prefab_bonuses_Small: {fileID: 7375147013826768889, guid: 1d27bcffa4043914db857476c3ffcd44, type: 3}
-  prefab_bonuses_Big: {fileID: 7903182773899973236, guid: 09f124f5a3d25cb478e3cbc9f16e625d, type: 3}
+  prefab_bonuses: {fileID: 3002559364930843350, guid: cfb7fa9578be3d44587ebe0c0ae8e2a5, type: 3}
+  prefab_explosion_Big: {fileID: 6088837143376474335, guid: aa5c940a676add6469b1c082b45fe5cd, type: 3}
+  prefab_explosion_Small: {fileID: 3126843552460200036, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
 --- !u!4 &1794621272
 Transform:
   m_ObjectHideFlags: 0

@@ -12,16 +12,23 @@ public class Logics : MonoBehaviour
     public Animator animator;
     public Animation anim;
 
-    public float baseSpeed;   // 기본 기체 이동 속도
-    float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
-    bool isSlowed = false;          // 느려진 상태인지 확인
-    float totalSpeed;
+    public float baseSpeed;   // 기본 기체 이동 속도    
     public float playerMove_H, playerMove_V;
-
-    float curShotDelay;     // 총알 발사 딜레이 체크용
+    
     public float maxShotDelay;  // 설정된 총알 발사 딜레이
     public int BulletPower;
     public Vector3 playerShotPoint;
+
+    public int defaultEnemyHP_Small;
+    public int defaultEnemyHP_Medium;
+    public int defaultEnemyHP_Boss;
+
+
+    float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
+    bool isSlowed = false;          // 느려진 상태인지 확인
+    float totalSpeed;
+    float curShotDelay;     // 총알 발사 딜레이 체크용
+
 
     private static Logics instance = null;
     public static Logics Instance
@@ -54,9 +61,17 @@ public class Logics : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.KeypadMultiply))
             maxShotDelay -= 0.1f;
+
+        if (Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            GameObject tempEnemy = objPool.GetObject("enemySmall");
+            tempEnemy.transform.position = new Vector3(0, 0, 0);
+        }
+
+
 #endif
 
-        Fire();
+            Fire();
         Reload();
         UpdatePlayerShotPoint();
     }
@@ -135,7 +150,6 @@ public class Logics : MonoBehaviour
         if (!Input.GetButton("Fire1") && !Input.GetKey(KeyCode.Space))
             return;
 
-        Debug.Log("Fire!");
         if (curShotDelay < maxShotDelay)
             return;
 
@@ -148,6 +162,8 @@ public class Logics : MonoBehaviour
                 bulletLv_1.transform.position = playerShotPoint;
                 Rigidbody2D rigidLv_1 = bulletLv_1.GetComponent<Rigidbody2D>();
                 rigidLv_1.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                bulletLv_1.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
+
                 break;
             case 2:
                 GameObject bulletLLv_2 = objPool.GetObject("playerBulletsA");
@@ -158,12 +174,17 @@ public class Logics : MonoBehaviour
                 Rigidbody2D rigidRLv_2 = bulletRLv_2.GetComponent<Rigidbody2D>();
                 rigidLLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidRLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                bulletLLv_2.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
+                bulletRLv_2.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
+
                 break;
             case 3:
                 GameObject bulletLv_3 = objPool.GetObject("playerBulletsB");
                 bulletLv_3.transform.position = playerShotPoint;
                 Rigidbody2D rigidLv_3 = bulletLv_3.GetComponent<Rigidbody2D>();
                 rigidLv_3.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                bulletLv_3.GetComponent<Bullet>().SetBulletDamage(BulletPower * 15);
+
                 break;
             case 4:
                 GameObject bulletLv_4 = objPool.GetObject("playerBulletsB");
@@ -178,6 +199,9 @@ public class Logics : MonoBehaviour
                 rigidLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidLLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidRLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                bulletLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower * 15);
+                bulletLLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
+                bulletRLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
                 break;
             case 5:
                 GameObject bulletLLv_5 = objPool.GetObject("playerBulletsB");
@@ -188,6 +212,8 @@ public class Logics : MonoBehaviour
                 Rigidbody2D rigidRLv_5 = bulletRLv_5.GetComponent<Rigidbody2D>();
                 rigidLLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidRLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                bulletLLv_5.GetComponent<Bullet>().SetBulletDamage(BulletPower * 15);
+                bulletRLv_5.GetComponent<Bullet>().SetBulletDamage(BulletPower * 15);
                 break;
         }
 
@@ -199,11 +225,25 @@ public class Logics : MonoBehaviour
     void Reload()
     {
         curShotDelay += Time.deltaTime;
-        Debug.Log("Reloading!");
     }
 
     void UpdatePlayerShotPoint()
     {
         playerShotPoint = player.transform.position + Vector3.up * 0.5f;
+    }
+
+    public int GetEnemyHP(string size)
+    {
+        switch(size)
+        {
+            case "Small":
+                return defaultEnemyHP_Small;
+            case "Medium":
+                return defaultEnemyHP_Medium;
+            case "Boss":
+                return defaultEnemyHP_Boss;
+        }
+
+        return defaultEnemyHP_Small;
     }
 }
