@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Logics : MonoBehaviour
 {
@@ -23,6 +25,14 @@ public class Logics : MonoBehaviour
     public int defaultEnemyHP_Medium;
     public int defaultEnemyHP_Boss;
 
+
+    public Text scoreText;
+    public Image[] lifeImages;
+    public GameObject gameOverSet;
+
+    public int life;
+    public int score;
+    public int powerLevel;
 
     float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
     bool isSlowed = false;          // 느려진 상태인지 확인
@@ -66,14 +76,18 @@ public class Logics : MonoBehaviour
         {
             GameObject tempEnemy = objPool.GetObject("enemySmall");
             tempEnemy.transform.position = new Vector3(0, 0, 0);
+            tempEnemy.GetComponent<Enemy>().HP = 100;
+            tempEnemy.GetComponent<Enemy>().score = 100;
         }
-
-
 #endif
 
-            Fire();
+
+
+        Fire();
         Reload();
         UpdatePlayerShotPoint();
+
+        scoreText.text = string.Format("{0:n0}", score);
     }
 
     private void FixedUpdate()
@@ -245,5 +259,58 @@ public class Logics : MonoBehaviour
         }
 
         return defaultEnemyHP_Small;
+    }
+
+    public void AddScore(int p)
+    {
+        score += p;
+    }
+
+    public void RespawnPlayer()
+    {
+        Invoke("RespawnPlayerExe", 2f);
+    }
+
+    public void RespawnPlayerExe()
+    {
+        player.transform.position = Vector3.down * 3.5f;
+        player.SetActive(true);
+        player.GetComponent<InputController>().isHit = false;
+    }
+
+
+    public void PlayerHit()
+    {
+        Debug.Log("Player Hit");
+
+        life--;
+
+        if (life == 0)
+        {
+            GameOver();
+        }
+        else
+            RespawnPlayer();
+
+        for (int i = 0; i < lifeImages.Length; i++)
+        {
+            lifeImages[i].color = new Color(0,0,0, 0);
+        }
+
+        for (int i = 0; i < life; i++)
+        {
+            lifeImages[i].color = new Color(1, 1, 1, 1);
+        }
+    }
+
+
+    public void GameOver()
+    {
+        gameOverSet.SetActive(true);
+    }
+
+    public void Retry()
+    {
+        SceneManager.LoadScene(0);
     }
 }

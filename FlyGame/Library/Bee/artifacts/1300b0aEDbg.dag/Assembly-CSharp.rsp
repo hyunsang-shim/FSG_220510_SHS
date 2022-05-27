@@ -346,7 +346,6 @@
 "Assets/Script/Enemy.cs"
 "Assets/Script/InputController.cs"
 "Assets/Script/Logics.cs"
-"Assets/Script/MaterialAnimation.cs"
 "Assets/Script/ObjPool.cs"
 "Assets/Script/TestScript.cs"
 -langversion:8.0

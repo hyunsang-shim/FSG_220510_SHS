@@ -12,6 +12,7 @@ public class InputController : MonoBehaviour
     float shotDelay;
     float curShotDelay;
     public float maxShotDelay;
+    public bool isHit = false;
 
     public GameObject ShotPoint;
 
@@ -113,6 +114,17 @@ public class InputController : MonoBehaviour
                 case "Right":
                     isTouchRight = true;
                     break;
+            }
+        }
+
+        if(collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
+        {
+            if (!isHit)
+            {
+                isHit = true;
+                Logics.Instance.PlayerHit();
+                gameObject.SetActive(false);
+                collision.gameObject.SetActive(false);
             }
         }
     }

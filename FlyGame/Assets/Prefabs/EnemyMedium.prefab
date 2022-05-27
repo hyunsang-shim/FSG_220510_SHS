@@ -158,3 +158,4 @@ MonoBehaviour:
   speed: 0
   HP: 200
   size: Medium
+  score: 250

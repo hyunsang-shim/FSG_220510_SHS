@@ -7,6 +7,7 @@ public class Enemy : MonoBehaviour
     public float speed;
     public int HP;
     public string size;
+    public int score;
     
     Rigidbody2D rig2d;
     Animator animator;
@@ -60,6 +61,7 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
+        Logics.Instance.AddScore(100);
         gameObject.SetActive(false);
     }
 
