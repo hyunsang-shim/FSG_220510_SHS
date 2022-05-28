@@ -8,7 +8,9 @@ public class Enemy : MonoBehaviour
     public int HP;
     public string size;
     public int score;
-    
+    GameObject collider;
+    public GameObject DieFx;
+
     Rigidbody2D rig2d;
     Animator animator;
     SpriteRenderer spriteRenderer;
@@ -18,8 +20,12 @@ public class Enemy : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         rig2d = GetComponent<Rigidbody2D>();
-        rig2d.velocity = Vector2.down * speed;
-        HP = Logics.Instance.GetEnemyHP(size);
+
+        if (GetComponent<BoxCollider2D>() == null)
+            collider = GetComponent<CircleCollider2D>().gameObject;
+        else
+            collider = GetComponent<BoxCollider2D>().gameObject;
+        
     }
 
     void OnHit(int dmg)
@@ -28,8 +34,12 @@ public class Enemy : MonoBehaviour
 
         if (HP <= 0)
         {
-            animator.SetBool("isDead", true);
-            Invoke("Die", 0.5f);
+            Logics.Instance.AddScore(100);
+            collider.SetActive(false);
+            GameObject fx = Instantiate(DieFx);
+            fx.transform.position = transform.position;
+            animator.runtimeAnimatorController = DieFx.GetComponent<Animator>().runtimeAnimatorController;
+            Invoke("Die", 0.8f);
         }
         else
         {
@@ -61,8 +71,18 @@ public class Enemy : MonoBehaviour
 
     void Die()
     {
-        Logics.Instance.AddScore(100);
         gameObject.SetActive(false);
+    }
+
+    public void Init()
+    {
+
+        rig2d.velocity = Vector2.down * speed;
+        HP = Logics.Instance.GetEnemyHP(size);
+
+        GameObject c;
+        c = GetComponent<BoxCollider2D>() == null ? GetComponent<CircleCollider2D>().gameObject : GetComponent<BoxCollider2D>().gameObject;
+        c.SetActive(true);
     }
 
 }

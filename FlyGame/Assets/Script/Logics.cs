@@ -34,6 +34,11 @@ public class Logics : MonoBehaviour
     public int score;
     public int powerLevel;
 
+    public GameObject[] enemyObj;
+    public Transform[] EnemySpawnPoints;
+    public float curSpawnDelay;
+    public float maxSpawnDelay;
+
     float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
     bool isSlowed = false;          // 느려진 상태인지 확인
     float totalSpeed;
@@ -59,6 +64,14 @@ public class Logics : MonoBehaviour
 
     private void Update()
     {
+        curSpawnDelay += Time.deltaTime;
+        if(curSpawnDelay > maxSpawnDelay)
+        {
+            SpawnEnemy();
+            maxSpawnDelay = Random.Range(0.5f, 3f);
+            curSpawnDelay = 0;
+        }
+
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.KeypadPlus))
             ++BulletPower;
@@ -81,8 +94,6 @@ public class Logics : MonoBehaviour
         }
 #endif
 
-
-
         Fire();
         Reload();
         UpdatePlayerShotPoint();
@@ -90,13 +101,38 @@ public class Logics : MonoBehaviour
         scoreText.text = string.Format("{0:n0}", score);
     }
 
+
+    void SpawnEnemy()
+    {
+
+        int ranEnemy = Random.Range(0, enemyObj.Length);
+        int ranPoint = Random.Range(0, EnemySpawnPoints.Length);
+        GameObject tmp;
+
+        switch (ranEnemy)
+        {
+            case 0:
+            default:
+                {
+                    tmp = objPool.GetObject("enemySmall");
+                    tmp.GetComponent<Enemy>().Init();
+
+                    break;
+                }
+        }
+        
+        tmp.transform.position = EnemySpawnPoints[ranPoint].position;
+        tmp.transform.rotation = EnemySpawnPoints[ranPoint].rotation;
+    }
     private void FixedUpdate()
     {
         SetAnimationDir();
         if (isSlowed)
-            player.transform.position += new Vector3(playerMove_H, playerMove_V, 0) * baseSpeed * Time.deltaTime;
+            totalSpeed = baseSpeed * slowModifyer;
         else
-            player.transform.position += new Vector3(playerMove_H, playerMove_V, 0) * baseSpeed * Time.deltaTime;
+            totalSpeed = baseSpeed;
+        
+        player.transform.position += new Vector3(playerMove_H, playerMove_V, 0) * totalSpeed * Time.deltaTime;
 
     }
 
@@ -176,7 +212,7 @@ public class Logics : MonoBehaviour
                 bulletLv_1.transform.position = playerShotPoint;
                 Rigidbody2D rigidLv_1 = bulletLv_1.GetComponent<Rigidbody2D>();
                 rigidLv_1.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLv_1.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
+                bulletLv_1.GetComponent<Bullet>().SetBulletDamage(BulletPower);
 
                 break;
             case 2:
@@ -188,8 +224,8 @@ public class Logics : MonoBehaviour
                 Rigidbody2D rigidRLv_2 = bulletRLv_2.GetComponent<Rigidbody2D>();
                 rigidLLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidRLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLLv_2.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
-                bulletRLv_2.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
+                bulletLLv_2.GetComponent<Bullet>().SetBulletDamage(BulletPower);
+                bulletRLv_2.GetComponent<Bullet>().SetBulletDamage(BulletPower);
 
                 break;
             case 3:
@@ -197,7 +233,7 @@ public class Logics : MonoBehaviour
                 bulletLv_3.transform.position = playerShotPoint;
                 Rigidbody2D rigidLv_3 = bulletLv_3.GetComponent<Rigidbody2D>();
                 rigidLv_3.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLv_3.GetComponent<Bullet>().SetBulletDamage(BulletPower * 15);
+                bulletLv_3.GetComponent<Bullet>().SetBulletDamage(BulletPower);
 
                 break;
             case 4:
@@ -213,9 +249,9 @@ public class Logics : MonoBehaviour
                 rigidLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidLLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidRLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower * 15);
-                bulletLLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
-                bulletRLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower * 10);
+                bulletLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower);
+                bulletLLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower);
+                bulletRLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower);
                 break;
             case 5:
                 GameObject bulletLLv_5 = objPool.GetObject("playerBulletsB");
@@ -226,8 +262,8 @@ public class Logics : MonoBehaviour
                 Rigidbody2D rigidRLv_5 = bulletRLv_5.GetComponent<Rigidbody2D>();
                 rigidLLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                 rigidRLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLLv_5.GetComponent<Bullet>().SetBulletDamage(BulletPower * 15);
-                bulletRLv_5.GetComponent<Bullet>().SetBulletDamage(BulletPower * 15);
+                bulletLLv_5.GetComponent<Bullet>().SetBulletDamage(BulletPower);
+                bulletRLv_5.GetComponent<Bullet>().SetBulletDamage(BulletPower);
                 break;
         }
 

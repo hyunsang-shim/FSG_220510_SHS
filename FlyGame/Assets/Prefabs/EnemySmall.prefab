@@ -155,7 +155,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bbbcb0a1ca00f849ab328dd0079a948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0
+  speed: 3
   HP: 100
   size: Small
   score: 50
+  collider: {fileID: 0}
+  DieFx: {fileID: 6346845101254927011, guid: 5c282cc598d600540a657aa7212d6646, type: 3}
