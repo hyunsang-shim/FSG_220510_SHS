@@ -216,7 +216,7 @@ public class ObjPool : MonoBehaviour
             case "explosion_Small":
                 targetPool = explosion_Small;
                 break;
-            case "explosion_Big":
+            case "explosion_Medium":
                 targetPool = explosion_Medium;
                 break;
         }

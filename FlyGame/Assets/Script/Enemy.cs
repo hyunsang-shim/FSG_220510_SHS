@@ -6,26 +6,20 @@ public class Enemy : MonoBehaviour
 {
     public float speed;
     public int HP;
-    public string size;
+    
     public int score;
-    GameObject collider;
     public GameObject DieFx;
 
     Rigidbody2D rig2d;
-    Animator animator;
     SpriteRenderer spriteRenderer;
+    bool isDead = false;
+    string size;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        animator = GetComponent<Animator>();
         rig2d = GetComponent<Rigidbody2D>();
 
-        if (GetComponent<BoxCollider2D>() == null)
-            collider = GetComponent<CircleCollider2D>().gameObject;
-        else
-            collider = GetComponent<BoxCollider2D>().gameObject;
-        
     }
 
     void OnHit(int dmg)
@@ -34,24 +28,25 @@ public class Enemy : MonoBehaviour
 
         if (HP <= 0)
         {
-            Logics.Instance.AddScore(100);
-            collider.SetActive(false);
-            GameObject fx = Instantiate(DieFx);
-            fx.transform.position = transform.position;
-            animator.runtimeAnimatorController = DieFx.GetComponent<Animator>().runtimeAnimatorController;
-            Invoke("Die", 0.8f);
+            Logics.Instance.EnemyDead(gameObject, isDead);
+            isDead = true;
         }
-        else
+        else if( HP > 0)
         {
             spriteRenderer.color = new Color(1, 0.8f, 0.8f, 1);
-            Invoke("SetDefaultSpriteColor", 0.15f);
+            Invoke("SetDefaultSpriteColor", 0.25f);
         }
-
+        
+        if (isDead)
+        {
+            
+        }
     }
 
     void SetDefaultSpriteColor()
     {
-        spriteRenderer.color = new Color(1, 1, 1, 1);
+        if(!isDead)
+            spriteRenderer.color = new Color(1, 1, 1, 1);
     }
 
 
@@ -69,20 +64,27 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void Die()
+    public string GetSize()
     {
-        gameObject.SetActive(false);
+        return size;
     }
 
-    public void Init()
+    public void SetSize(string s)
+    {
+        size = s;
+    }
+
+    public void Init(string _size)
     {
 
         rig2d.velocity = Vector2.down * speed;
         HP = Logics.Instance.GetEnemyHP(size);
-
+        size = _size;
         GameObject c;
         c = GetComponent<BoxCollider2D>() == null ? GetComponent<CircleCollider2D>().gameObject : GetComponent<BoxCollider2D>().gameObject;
         c.SetActive(true);
+        isDead = false;
+        spriteRenderer.color = new Color(1, 1, 1, 1);
     }
 
 }

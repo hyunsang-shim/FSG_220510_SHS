@@ -221,6 +221,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BGMs:
   - {fileID: 8300000, guid: 1f464f06b07ce8241932121018a6cd61, type: 3}
+  clipBGM_Normal: {fileID: 8300000, guid: 1f464f06b07ce8241932121018a6cd61, type: 3}
+  clipPlayerAttack: {fileID: 8300000, guid: 9e6dc0f3b79a3c64fa13c13e4ff9743f, type: 3}
+  clipPlayerDeath: {fileID: 8300000, guid: 1cd378deeab57f14bbd871dfb25e85c2, type: 3}
+  clipEnemySmallDeath: {fileID: 8300000, guid: 55a6ff14783234646b27225b09d3bf15, type: 3}
+  clipEnemyMediumDeath: {fileID: 8300000, guid: 662f8b0fe7f39d341a63968054ccc95d, type: 3}
 --- !u!82 &29508138
 AudioSource:
   m_ObjectHideFlags: 0
@@ -232,10 +237,10 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -277,7 +282,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1026,8 +1031,8 @@ MonoBehaviour:
   baseSpeed: 3
   playerMove_H: 0
   playerMove_V: 0
-  maxShotDelay: 0.5
-  BulletPower: 1
+  maxShotDelay: 0.2
+  BulletPower: 2
   playerShotPoint: {x: 0, y: 0, z: 0}
   defaultEnemyHP_Small: 5
   defaultEnemyHP_Medium: 12
@@ -1041,7 +1046,9 @@ MonoBehaviour:
   life: 3
   score: 0
   powerLevel: 0
-  enemyObj: []
+  enemyObj:
+  - {fileID: 3126843552460200036, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
+  - {fileID: 3628424149191940980, guid: 253329dac95533446bd018e68ae103c0, type: 3}
   EnemySpawnPoints:
   - {fileID: 1318057621}
   - {fileID: 1449935648}
@@ -1787,67 +1794,6 @@ Transform:
   m_Father: {fileID: 1775008377}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1607183981
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_RootOrder
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 1.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.69
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200033, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3126843552460200036, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: m_Name
-      value: EnemySmall
-      objectReference: {fileID: 0}
-    - target: {fileID: 8264258700277359223, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
-      propertyPath: HP
-      value: 5
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
 --- !u!1 &1631865363
 GameObject:
   m_ObjectHideFlags: 0
@@ -2142,7 +2088,7 @@ MonoBehaviour:
   prefab_powerUps_FullPower: {fileID: 7903182773899973236, guid: 09f124f5a3d25cb478e3cbc9f16e625d, type: 3}
   prefab_bonuses: {fileID: 3002559364930843350, guid: cfb7fa9578be3d44587ebe0c0ae8e2a5, type: 3}
   prefab_explosion_Big: {fileID: 6088837143376474335, guid: aa5c940a676add6469b1c082b45fe5cd, type: 3}
-  prefab_explosion_Small: {fileID: 3126843552460200036, guid: 799d286451bb9604da208ac8e228bf7d, type: 3}
+  prefab_explosion_Small: {fileID: 5156775181663589347, guid: 676880819374758439439636bf379d32, type: 3}
 --- !u!4 &1794621272
 Transform:
   m_ObjectHideFlags: 0

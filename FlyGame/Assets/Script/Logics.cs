@@ -104,18 +104,33 @@ public class Logics : MonoBehaviour
 
     void SpawnEnemy()
     {
-
+        Debug.LogWarning("enemyObj.Length: " + enemyObj.Length.ToString());
         int ranEnemy = Random.Range(0, enemyObj.Length);
         int ranPoint = Random.Range(0, EnemySpawnPoints.Length);
         GameObject tmp;
+        Debug.Log("ranEnemy => " + ranEnemy.ToString());
 
         switch (ranEnemy)
         {
             case 0:
-            default:
                 {
                     tmp = objPool.GetObject("enemySmall");
-                    tmp.GetComponent<Enemy>().Init();
+                    tmp.GetComponent<Enemy>().Init("Small");
+
+                    break;
+                }
+            case 1:
+                {
+                    tmp = objPool.GetObject("enemyMedium");
+                    tmp.GetComponent<Enemy>().Init("Medium");
+
+                    break;
+                }
+            default:
+                {
+                    Debug.LogWarning("Enemy Spawn Failed! -> Spawned small sized one instead.");
+                    tmp = objPool.GetObject("enemySmall");
+                    tmp.GetComponent<Enemy>().Init("Small");
 
                     break;
                 }
@@ -205,71 +220,87 @@ public class Logics : MonoBehaviour
 
         // 플레이어 총알 패턴
         // Power에 따라 총알 변경
-        switch (BulletPower)
+        if (!player.GetComponent<InputController>().isHit)
         {
-            case 1:
-                GameObject bulletLv_1 = objPool.GetObject("playerBulletsA");
-                bulletLv_1.transform.position = playerShotPoint;
-                Rigidbody2D rigidLv_1 = bulletLv_1.GetComponent<Rigidbody2D>();
-                rigidLv_1.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLv_1.GetComponent<Bullet>().SetBulletDamage(BulletPower);
+            switch (BulletPower)
+            {
+                case 1:
+                    GameObject bulletLv_1 = objPool.GetObject("playerBulletsA");
+                    bulletLv_1.transform.position = playerShotPoint;
+                    Rigidbody2D rigidLv_1 = bulletLv_1.GetComponent<Rigidbody2D>();
+                    rigidLv_1.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLv_1.GetComponent<Bullet>().SetBulletDamage(1);
 
-                break;
-            case 2:
-                GameObject bulletLLv_2 = objPool.GetObject("playerBulletsA");
-                GameObject bulletRLv_2 = objPool.GetObject("playerBulletsA");
-                bulletLLv_2.transform.position = playerShotPoint + Vector3.left * 0.1f;
-                bulletRLv_2.transform.position = playerShotPoint + Vector3.right * 0.1f;
-                Rigidbody2D rigidLLv_2 = bulletLLv_2.GetComponent<Rigidbody2D>();
-                Rigidbody2D rigidRLv_2 = bulletRLv_2.GetComponent<Rigidbody2D>();
-                rigidLLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                rigidRLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLLv_2.GetComponent<Bullet>().SetBulletDamage(BulletPower);
-                bulletRLv_2.GetComponent<Bullet>().SetBulletDamage(BulletPower);
+                    break;
+                case 2:
+                    GameObject bulletLLv_2 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletRLv_2 = objPool.GetObject("playerBulletsA");
+                    bulletLLv_2.transform.position = playerShotPoint + Vector3.left * 0.1f;
+                    bulletRLv_2.transform.position = playerShotPoint + Vector3.right * 0.1f;
+                    Rigidbody2D rigidLLv_2 = bulletLLv_2.GetComponent<Rigidbody2D>();
+                    Rigidbody2D rigidRLv_2 = bulletRLv_2.GetComponent<Rigidbody2D>();
+                    rigidLLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    rigidRLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLLv_2.GetComponent<Bullet>().SetBulletDamage(1);
+                    bulletRLv_2.GetComponent<Bullet>().SetBulletDamage(1);
 
-                break;
-            case 3:
-                GameObject bulletLv_3 = objPool.GetObject("playerBulletsB");
-                bulletLv_3.transform.position = playerShotPoint;
-                Rigidbody2D rigidLv_3 = bulletLv_3.GetComponent<Rigidbody2D>();
-                rigidLv_3.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLv_3.GetComponent<Bullet>().SetBulletDamage(BulletPower);
+                    break;
+                case 3:
+                    GameObject bulletLv_3 = objPool.GetObject("playerBulletsB");
+                    bulletLv_3.transform.position = playerShotPoint;
+                    Rigidbody2D rigidLv_3 = bulletLv_3.GetComponent<Rigidbody2D>();
+                    rigidLv_3.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLv_3.GetComponent<Bullet>().SetBulletDamage(3);
 
-                break;
-            case 4:
-                GameObject bulletLv_4 = objPool.GetObject("playerBulletsB");
-                GameObject bulletLLv_4 = objPool.GetObject("playerBulletsA");
-                GameObject bulletRLv_4 = objPool.GetObject("playerBulletsA");
-                bulletLv_4.transform.position = playerShotPoint;
-                bulletLLv_4.transform.position = playerShotPoint + Vector3.left * 0.15f;
-                bulletRLv_4.transform.position = playerShotPoint + Vector3.right * 0.15f;
-                Rigidbody2D rigidLv_4 = bulletLv_4.GetComponent<Rigidbody2D>();
-                Rigidbody2D rigidLLv_4 = bulletLLv_4.GetComponent<Rigidbody2D>();
-                Rigidbody2D rigidRLv_4 = bulletRLv_4.GetComponent<Rigidbody2D>();
-                rigidLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                rigidLLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                rigidRLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower);
-                bulletLLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower);
-                bulletRLv_4.GetComponent<Bullet>().SetBulletDamage(BulletPower);
-                break;
-            case 5:
-                GameObject bulletLLv_5 = objPool.GetObject("playerBulletsB");
-                GameObject bulletRLv_5 = objPool.GetObject("playerBulletsB");
-                bulletLLv_5.transform.position = playerShotPoint + Vector3.left * 0.15f;
-                bulletRLv_5.transform.position = playerShotPoint + Vector3.right * 0.15f;
-                Rigidbody2D rigidLLv_5 = bulletLLv_5.GetComponent<Rigidbody2D>();
-                Rigidbody2D rigidRLv_5 = bulletRLv_5.GetComponent<Rigidbody2D>();
-                rigidLLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                rigidRLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                bulletLLv_5.GetComponent<Bullet>().SetBulletDamage(BulletPower);
-                bulletRLv_5.GetComponent<Bullet>().SetBulletDamage(BulletPower);
-                break;
+                    break;
+                case 4:
+                    GameObject bulletLv_4 = objPool.GetObject("playerBulletsB");
+                    GameObject bulletLLv_4 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletRLv_4 = objPool.GetObject("playerBulletsA");
+                    bulletLv_4.transform.position = playerShotPoint;
+                    bulletLLv_4.transform.position = playerShotPoint + Vector3.left * 0.15f;
+                    bulletRLv_4.transform.position = playerShotPoint + Vector3.right * 0.15f;
+                    Rigidbody2D rigidLv_4 = bulletLv_4.GetComponent<Rigidbody2D>();
+                    Rigidbody2D rigidLLv_4 = bulletLLv_4.GetComponent<Rigidbody2D>();
+                    Rigidbody2D rigidRLv_4 = bulletRLv_4.GetComponent<Rigidbody2D>();
+                    rigidLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    rigidLLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    rigidRLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLv_4.GetComponent<Bullet>().SetBulletDamage(3);
+                    bulletLLv_4.GetComponent<Bullet>().SetBulletDamage(1);
+                    bulletRLv_4.GetComponent<Bullet>().SetBulletDamage(1);
+                    break;
+                case 5:
+                    GameObject bulletLLv_5 = objPool.GetObject("playerBulletsB");
+                    GameObject bulletRLv_5 = objPool.GetObject("playerBulletsB");
+                    bulletLLv_5.transform.position = playerShotPoint + Vector3.left * 0.15f;
+                    bulletRLv_5.transform.position = playerShotPoint + Vector3.right * 0.15f;
+                    Rigidbody2D rigidLLv_5 = bulletLLv_5.GetComponent<Rigidbody2D>();
+                    Rigidbody2D rigidRLv_5 = bulletRLv_5.GetComponent<Rigidbody2D>();
+                    rigidLLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    rigidRLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLLv_5.GetComponent<Bullet>().SetBulletDamage(3);
+                    bulletRLv_5.GetComponent<Bullet>().SetBulletDamage(3);
+                    break;
+            }
+
+            curShotDelay = 0;
+            AudioManager.Instance.PlaySFX("PLAYER_ATTACK");
+
         }
+    }
 
-        curShotDelay = 0;
-        // 총알 발사
-
+    public void EnemyDead(GameObject e, bool f)
+    {
+        if (!f)
+        {
+            e.gameObject.SetActive(false);
+            string enemySize = e.GetComponent<Enemy>().GetSize();
+            AudioManager.Instance.PlaySFX("EnemyDeath_" + enemySize);
+            AddScore(e.GetComponent<Enemy>().score);
+            GameObject fx = objPool.GetObject("explosion_" + enemySize);
+            fx.transform.position = e.transform.position;
+        }
     }
 
     void Reload()
@@ -303,7 +334,8 @@ public class Logics : MonoBehaviour
     }
 
     public void RespawnPlayer()
-    {
+    {       
+
         Invoke("RespawnPlayerExe", 2f);
     }
 
@@ -317,7 +349,23 @@ public class Logics : MonoBehaviour
 
     public void PlayerHit()
     {
-        Debug.Log("Player Hit");
+        AudioManager.Instance.PlaySFX("PLAYER_DEATH");
+
+        GameObject playerDieFX_1 = objPool.GetObject("explosion_Medium");
+        playerDieFX_1.transform.position = player.transform.position;
+        playerDieFX_1.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 1) * 2, ForceMode2D.Impulse);
+
+        GameObject playerDieFX_2 = objPool.GetObject("explosion_Medium");
+        playerDieFX_2.transform.position = player.transform.position;
+        playerDieFX_2.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 1) * 2, ForceMode2D.Impulse);
+
+        GameObject playerDieFX_3 = objPool.GetObject("explosion_Medium");
+        playerDieFX_3.transform.position = player.transform.position;
+        playerDieFX_3.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, -1) * 2, ForceMode2D.Impulse);
+
+        GameObject playerDieFX_4 = objPool.GetObject("explosion_Medium");
+        playerDieFX_4.transform.position = player.transform.position;
+        playerDieFX_4.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, -1) * 2, ForceMode2D.Impulse);
 
         life--;
 
