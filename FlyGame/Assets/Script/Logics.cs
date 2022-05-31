@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 public class Logics : MonoBehaviour
 {
+
+    public List<Spawner> spawnList;
+    public int spawnIndex;
+    public bool spawnEnd;
 
     public ObjPool objPool;
     public int direction;
@@ -37,7 +42,7 @@ public class Logics : MonoBehaviour
     public GameObject[] enemyObj;
     public Transform[] EnemySpawnPoints;
     public float curSpawnDelay;
-    public float maxSpawnDelay;
+    public float nextSpawnDelay;
 
     float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
     bool isSlowed = false;          // 느려진 상태인지 확인
@@ -56,19 +61,23 @@ public class Logics : MonoBehaviour
 
     private void Awake()
     {
+        spawnList = new List<Spawner>();
+
         if (instance == null) instance = this;
 
         playerShotPoint = player.transform.position + Vector3.up * 0.5f;
         BulletPower = 1;
+
+        ReadSpawnData();
+        ReadEnemyMovePattern();
     }
 
     private void Update()
     {
         curSpawnDelay += Time.deltaTime;
-        if(curSpawnDelay > maxSpawnDelay)
+        if(curSpawnDelay > nextSpawnDelay && !spawnEnd)
         {
             SpawnEnemy();
-            maxSpawnDelay = Random.Range(0.5f, 3f);
             curSpawnDelay = 0;
         }
 
@@ -101,28 +110,55 @@ public class Logics : MonoBehaviour
         scoreText.text = string.Format("{0:n0}", score);
     }
 
+    void ReadSpawnData()
+    {
+        // 변수 초기화
+        spawnList.Clear();
+        spawnIndex = 0;
+        spawnEnd = false;
+
+        // 파일 읽기
+        TextAsset txtFile = Resources.Load("Stage_0") as TextAsset;
+
+        StringReader stringReader = new StringReader(txtFile.text);
+
+        while (stringReader != null)
+        {
+            string line = stringReader.ReadLine();           
+
+            if (line == null) break;
+            
+            Spawner spawnData = new Spawner();
+            spawnData.delay = float.Parse(line.Split(',')[0]);
+            spawnData.type = line.Split(',')[1];
+            spawnData.point = int.Parse(line.Split(',')[2]);
+            spawnData.movePatternID = int.Parse(line.Split(',')[3]);
+            spawnList.Add(spawnData);
+        }
+
+        // 파일 닫기
+        stringReader.Close();
+
+    }
 
     void SpawnEnemy()
     {
-        Debug.LogWarning("enemyObj.Length: " + enemyObj.Length.ToString());
-        int ranEnemy = Random.Range(0, enemyObj.Length);
-        int ranPoint = Random.Range(0, EnemySpawnPoints.Length);
-        GameObject tmp;
-        Debug.Log("ranEnemy => " + ranEnemy.ToString());
 
-        switch (ranEnemy)
+        GameObject tmp;
+
+        switch (spawnList[spawnIndex].type)
         {
-            case 0:
+            case "S":
                 {
                     tmp = objPool.GetObject("enemySmall");
-                    tmp.GetComponent<Enemy>().Init("Small");
+                    tmp.GetComponent<Enemy>().Init("Small", spawnList[spawnIndex].movePatternID);
 
                     break;
                 }
-            case 1:
+            case "M":
                 {
                     tmp = objPool.GetObject("enemyMedium");
-                    tmp.GetComponent<Enemy>().Init("Medium");
+                    tmp.GetComponent<Enemy>().Init("Medium", spawnList[spawnIndex].movePatternID);
 
                     break;
                 }
@@ -130,15 +166,31 @@ public class Logics : MonoBehaviour
                 {
                     Debug.LogWarning("Enemy Spawn Failed! -> Spawned small sized one instead.");
                     tmp = objPool.GetObject("enemySmall");
-                    tmp.GetComponent<Enemy>().Init("Small");
+                    tmp.GetComponent<Enemy>().Init("Small", spawnList[spawnIndex].movePatternID);
 
                     break;
                 }
         }
         
-        tmp.transform.position = EnemySpawnPoints[ranPoint].position;
-        tmp.transform.rotation = EnemySpawnPoints[ranPoint].rotation;
+        tmp.transform.position = EnemySpawnPoints[spawnList[spawnIndex].point].position;
+        tmp.transform.rotation = EnemySpawnPoints[spawnList[spawnIndex].point].rotation;
+
+        // 다음 스폰 딜레이로 갱신
+        nextSpawnDelay = spawnList[spawnIndex++].delay;
+        
+        // 리스트 끝이면 스폰 종료
+        if (spawnIndex == spawnList.Count)
+        {
+            spawnEnd = true;
+        }
+
     }
+    
+    void ReadEnemyMovePattern()
+    {
+
+    }
+
     private void FixedUpdate()
     {
         SetAnimationDir();
@@ -368,11 +420,10 @@ public class Logics : MonoBehaviour
         playerDieFX_4.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, -1) * 2, ForceMode2D.Impulse);
 
         life--;
+        isSlowed = false;
 
         if (life == 0)
-        {
             GameOver();
-        }
         else
             RespawnPlayer();
 

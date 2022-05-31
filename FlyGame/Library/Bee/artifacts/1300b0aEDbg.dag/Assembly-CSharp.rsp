@@ -349,6 +349,7 @@
 "Assets/Script/InputController.cs"
 "Assets/Script/Logics.cs"
 "Assets/Script/ObjPool.cs"
+"Assets/Script/Spawner.cs"
 "Assets/Script/TestScript.cs"
 -langversion:8.0
 

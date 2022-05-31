@@ -15,11 +15,13 @@ public class Enemy : MonoBehaviour
     bool isDead = false;
     string size;
 
+    List<Vector3> movePoints;
+
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rig2d = GetComponent<Rigidbody2D>();
-
+        movePoints = new List<Vector3>();
     }
 
     void OnHit(int dmg)
@@ -74,10 +76,10 @@ public class Enemy : MonoBehaviour
         size = s;
     }
 
-    public void Init(string _size)
+    public void Init(string _size, List<Vector3> points)
     {
 
-        rig2d.velocity = Vector2.down * speed;
+       
         HP = Logics.Instance.GetEnemyHP(size);
         size = _size;
         GameObject c;
@@ -85,6 +87,24 @@ public class Enemy : MonoBehaviour
         c.SetActive(true);
         isDead = false;
         spriteRenderer.color = new Color(1, 1, 1, 1);
+
+        movePoints = points;
+        if (movePoints.Count == 0)
+            rig2d.velocity = Vector2.down * speed;
+        else
+            StartCoroutine("MoveToPoints",points);
+
+    }
+
+    IEnumerable MoveToPoints(List<Vector3> points)
+    {
+        int pointIdx = 0;
+        while (points[pointIdx] != null)
+        {
+            Vector3.Slerp(transform.position, points[pointIdx++], speed);
+
+        yield return new WaitForSeconds(0.2f);
+        }
     }
 
 }
