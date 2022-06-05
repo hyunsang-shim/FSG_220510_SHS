@@ -101,6 +101,14 @@ public class Logics : MonoBehaviour
             tempEnemy.GetComponent<Enemy>().HP = 100;
             tempEnemy.GetComponent<Enemy>().score = 100;
         }
+        // Debug : Spawn Enemies from the top of the list
+        if (Input.GetKeyDown(KeyCode.KeypadPeriod))
+        {
+            curSpawnDelay = 0;
+            spawnIndex = 0;
+            spawnEnd = false;
+
+        }
 #endif
 
         Fire();
@@ -132,7 +140,7 @@ public class Logics : MonoBehaviour
             spawnData.delay = float.Parse(line.Split(',')[0]);
             spawnData.type = line.Split(',')[1];
             spawnData.point = int.Parse(line.Split(',')[2]);
-            spawnData.movePatternID = int.Parse(line.Split(',')[3]);
+           // spawnData.movePatternID = int.Parse(line.Split(',')[3]);
             spawnList.Add(spawnData);
         }
 
@@ -151,14 +159,14 @@ public class Logics : MonoBehaviour
             case "S":
                 {
                     tmp = objPool.GetObject("enemySmall");
-                    tmp.GetComponent<Enemy>().Init("Small", spawnList[spawnIndex].movePatternID);
+                    tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID);
 
                     break;
                 }
             case "M":
                 {
                     tmp = objPool.GetObject("enemyMedium");
-                    tmp.GetComponent<Enemy>().Init("Medium", spawnList[spawnIndex].movePatternID);
+                    tmp.GetComponent<Enemy>().Init("Medium", "OneShotToTarget", spawnList[spawnIndex].movePatternID);
 
                     break;
                 }
@@ -166,7 +174,7 @@ public class Logics : MonoBehaviour
                 {
                     Debug.LogWarning("Enemy Spawn Failed! -> Spawned small sized one instead.");
                     tmp = objPool.GetObject("enemySmall");
-                    tmp.GetComponent<Enemy>().Init("Small", spawnList[spawnIndex].movePatternID);
+                    tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID);
 
                     break;
                 }

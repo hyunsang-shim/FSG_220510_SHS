@@ -92,7 +92,8 @@ public class InputController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "Border")
+
+        if (collision.gameObject.tag == "Border")
         {
             switch(collision.gameObject.name)
             {
@@ -117,8 +118,8 @@ public class InputController : MonoBehaviour
             {
                 isHit = true;
                 Logics.Instance.PlayerHit();
-                gameObject.SetActive(false);
                 collision.gameObject.SetActive(false);
+                gameObject.SetActive(false);
             }
         }
     }

@@ -9,19 +9,21 @@ public class Enemy : MonoBehaviour
     
     public int score;
     public GameObject DieFx;
+    GameObject bullets;
 
     Rigidbody2D rig2d;
     SpriteRenderer spriteRenderer;
     bool isDead = false;
     string size;
+    string MyShotType;
 
-    List<Vector3> movePoints;
+    int movePoints;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rig2d = GetComponent<Rigidbody2D>();
-        movePoints = new List<Vector3>();
+        movePoints = 0;
     }
 
     void OnHit(int dmg)
@@ -76,23 +78,28 @@ public class Enemy : MonoBehaviour
         size = s;
     }
 
-    public void Init(string _size, List<Vector3> points)
+    public void Init(string _size, string _shotType, int points)
     {
 
        
         HP = Logics.Instance.GetEnemyHP(size);
         size = _size;
+        MyShotType = _shotType;
         GameObject c;
         c = GetComponent<BoxCollider2D>() == null ? GetComponent<CircleCollider2D>().gameObject : GetComponent<BoxCollider2D>().gameObject;
         c.SetActive(true);
         isDead = false;
         spriteRenderer.color = new Color(1, 1, 1, 1);
 
+
         movePoints = points;
-        if (movePoints.Count == 0)
+        if (movePoints == 0)
             rig2d.velocity = Vector2.down * speed;
         else
             StartCoroutine("MoveToPoints",points);
+
+        Invoke("FireBullet", 0.4f);
+
 
     }
 
@@ -107,4 +114,22 @@ public class Enemy : MonoBehaviour
         }
     }
 
+
+    public void FireBullet()
+    {
+        switch (MyShotType)
+        {
+            case "OneShotToTarget":
+                {
+                    Vector3 targetPos = Logics.Instance.player.transform.position;
+                    GameObject bullet = Logics.Instance.objPool.GetObject("enemyBulletsA");
+                    bullet.transform.position = transform.position;
+                    bullet.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                    Rigidbody2D rigidLv_1 = bullet.GetComponent<Rigidbody2D>();
+
+                    rigidLv_1.AddForce((Vector2)(targetPos - transform.position).normalized * 3, ForceMode2D.Impulse);
+                    break;
+                }
+        }
+    }
 }
