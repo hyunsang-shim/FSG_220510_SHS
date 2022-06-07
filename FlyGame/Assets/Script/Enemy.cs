@@ -4,26 +4,30 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public float speed;
-    public int HP;
+    float speed;
+    int HP;
     
     public int score;
     public GameObject DieFx;
     GameObject bullets;
+    int movePatternID;
+    int positionID = 1;
 
     Rigidbody2D rig2d;
     SpriteRenderer spriteRenderer;
     bool isDead = false;
     string size;
     string MyShotType;
-
-    int movePoints;
+    List<Transform> MovePoints = new List<Transform>();
+    Vector3 curPos, nextPos;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rig2d = GetComponent<Rigidbody2D>();
-        movePoints = 0;
+        movePatternID = 0;
+        curPos = nextPos = transform.position;
+
     }
 
     void OnHit(int dmg)
@@ -32,7 +36,7 @@ public class Enemy : MonoBehaviour
 
         if (HP <= 0)
         {
-            Logics.Instance.EnemyDead(gameObject, isDead);
+            Logics.Instance.EnemyDead(gameObject, isDead, score);
             isDead = true;
         }
         else if( HP > 0)
@@ -53,7 +57,22 @@ public class Enemy : MonoBehaviour
             spriteRenderer.color = new Color(1, 1, 1, 1);
     }
 
+    private void Update()
+    {
+        if ((Mathf.Abs(curPos.x - nextPos.x) <= 0.01f) && (Mathf.Abs(curPos.y - nextPos.y) <= 0.01f))
+        {
+            if (MovePoints.Count > positionID)
+            {
+                nextPos = MovePoints[positionID++].position;
+            }
+        }
+    }
 
+
+    private void FixedUpdate()
+    {
+        MoveEnemy();
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "BulletKiller")
@@ -78,40 +97,30 @@ public class Enemy : MonoBehaviour
         size = s;
     }
 
-    public void Init(string _size, string _shotType, int points)
+    public void Init(string _size, string _shotType, int _movePattern, float _speed)
     {
 
-       
-        HP = Logics.Instance.GetEnemyHP(size);
         size = _size;
+        HP = Logics.Instance.GetEnemyHP(size);
         MyShotType = _shotType;
+        speed = _speed;
+
+        MovePoints = new List<Transform>();
+
         GameObject c;
         c = GetComponent<BoxCollider2D>() == null ? GetComponent<CircleCollider2D>().gameObject : GetComponent<BoxCollider2D>().gameObject;
         c.SetActive(true);
         isDead = false;
         spriteRenderer.color = new Color(1, 1, 1, 1);
-
-
-        movePoints = points;
-        if (movePoints == 0)
-            rig2d.velocity = Vector2.down * speed;
-        else
-            StartCoroutine("MoveToPoints",points);
+        movePatternID = _movePattern;
+        MovePoints = Logics.Instance.GetEnemyMovePoints(movePatternID);
+        transform.position = MovePoints[0].position;
+        nextPos = MovePoints[1].position;
+        positionID = 1;
 
         Invoke("FireBullet", 0.4f);
 
 
-    }
-
-    IEnumerable MoveToPoints(List<Vector3> points)
-    {
-        int pointIdx = 0;
-        while (points[pointIdx] != null)
-        {
-            Vector3.Slerp(transform.position, points[pointIdx++], speed);
-
-        yield return new WaitForSeconds(0.2f);
-        }
     }
 
 
@@ -131,5 +140,12 @@ public class Enemy : MonoBehaviour
                     break;
                 }
         }
+    }
+
+
+    private void MoveEnemy()
+    {
+        transform.position = Vector3.MoveTowards(transform.position, nextPos, speed * Time.fixedDeltaTime);
+        curPos = transform.position;
     }
 }

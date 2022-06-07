@@ -8,29 +8,30 @@ using System.IO;
 public class Logics : MonoBehaviour
 {
 
-    public List<Spawner> spawnList;
-    public int spawnIndex;
-    public bool spawnEnd;
+    List<Spawner> spawnList;
+    int spawnIndex;
+    bool spawnEnd;
 
     public ObjPool objPool;
-    public int direction;
+    int direction;
 
     public GameObject player;
     public Animator animator;
-    public Animation anim;
 
+
+    Vector3 playerShotPoint;
+
+    // 밸런스 요소들
+    [SerializeField]
     public float baseSpeed;   // 기본 기체 이동 속도    
     public float playerMove_H, playerMove_V;
-    
     public float maxShotDelay;  // 설정된 총알 발사 딜레이
     public int BulletPower;
-    public Vector3 playerShotPoint;
-
     public int defaultEnemyHP_Small;
     public int defaultEnemyHP_Medium;
     public int defaultEnemyHP_Boss;
 
-
+    // UI 요소들
     public Text scoreText;
     public Image[] lifeImages;
     public GameObject gameOverSet;
@@ -39,10 +40,12 @@ public class Logics : MonoBehaviour
     public int score;
     public int powerLevel;
 
-    public GameObject[] enemyObj;
-    public Transform[] EnemySpawnPoints;
+    public int aliveEnemies = 0;
+    public float forceSpawnDelay = 0.5f;
     public float curSpawnDelay;
     public float nextSpawnDelay;
+    List<List<int>> movePattern = new List<List<int>>();
+    public Transform[] enemyMovePoints;
 
     float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
     bool isSlowed = false;          // 느려진 상태인지 확인
@@ -61,21 +64,25 @@ public class Logics : MonoBehaviour
 
     private void Awake()
     {
-        spawnList = new List<Spawner>();
-
         if (instance == null) instance = this;
 
+
+        spawnList = new List<Spawner>();
         playerShotPoint = player.transform.position + Vector3.up * 0.5f;
         BulletPower = 1;
 
         ReadSpawnData();
-        ReadEnemyMovePattern();
+        ReadEnemyMovePatterns();
     }
 
     private void Update()
     {
         curSpawnDelay += Time.deltaTime;
-        if(curSpawnDelay > nextSpawnDelay && !spawnEnd)
+
+        if ((curSpawnDelay > forceSpawnDelay) && (aliveEnemies == 0) && !spawnEnd)
+            nextSpawnDelay = forceSpawnDelay;
+
+        if((curSpawnDelay > nextSpawnDelay) && !spawnEnd)
         {
             SpawnEnemy();
             curSpawnDelay = 0;
@@ -94,13 +101,6 @@ public class Logics : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.KeypadMultiply))
             maxShotDelay -= 0.1f;
 
-        if (Input.GetKeyDown(KeyCode.Keypad1))
-        {
-            GameObject tempEnemy = objPool.GetObject("enemySmall");
-            tempEnemy.transform.position = new Vector3(0, 0, 0);
-            tempEnemy.GetComponent<Enemy>().HP = 100;
-            tempEnemy.GetComponent<Enemy>().score = 100;
-        }
         // Debug : Spawn Enemies from the top of the list
         if (Input.GetKeyDown(KeyCode.KeypadPeriod))
         {
@@ -139,8 +139,8 @@ public class Logics : MonoBehaviour
             Spawner spawnData = new Spawner();
             spawnData.delay = float.Parse(line.Split(',')[0]);
             spawnData.type = line.Split(',')[1];
-            spawnData.point = int.Parse(line.Split(',')[2]);
-           // spawnData.movePatternID = int.Parse(line.Split(',')[3]);
+            spawnData.movePatternID = int.Parse(line.Split(',')[2]);
+            spawnData.speed = int.Parse(line.Split(',')[3]);
             spawnList.Add(spawnData);
         }
 
@@ -149,24 +149,55 @@ public class Logics : MonoBehaviour
 
     }
 
+    void ReadEnemyMovePatterns()
+    {
+
+        TextAsset txtFile = Resources.Load("EnemyMovePoints") as TextAsset;
+        StringReader stringReader = new StringReader(txtFile.text);
+        int patternCount = 0;
+        while (stringReader != null)
+        {
+            string line = stringReader.ReadLine();
+
+            if (line == null) break;
+
+            movePattern.Add(new List<int>());
+            int count = int.Parse(line.Split(',')[0]);
+
+            for (int i = 1; i <= count; i++)
+            {
+                movePattern[patternCount].Add(int.Parse(line.Split(',')[i]));
+            }
+
+            patternCount++;
+
+        }
+    }
+
     void SpawnEnemy()
     {
 
         GameObject tmp;
-
         switch (spawnList[spawnIndex].type)
-        {
+        {            
             case "S":
                 {
                     tmp = objPool.GetObject("enemySmall");
-                    tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID);
-
+                    if (tmp != null)
+                    {
+                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed);
+                        aliveEnemies++;
+                    }
                     break;
                 }
             case "M":
                 {
                     tmp = objPool.GetObject("enemyMedium");
-                    tmp.GetComponent<Enemy>().Init("Medium", "OneShotToTarget", spawnList[spawnIndex].movePatternID);
+                    if (tmp != null)
+                    {
+                        tmp.GetComponent<Enemy>().Init("Medium", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed);
+                        aliveEnemies++;
+                    }
 
                     break;
                 }
@@ -174,14 +205,14 @@ public class Logics : MonoBehaviour
                 {
                     Debug.LogWarning("Enemy Spawn Failed! -> Spawned small sized one instead.");
                     tmp = objPool.GetObject("enemySmall");
-                    tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID);
-
+                    if (tmp != null)
+                    {
+                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed);
+                        aliveEnemies++;
+                    }
                     break;
                 }
         }
-        
-        tmp.transform.position = EnemySpawnPoints[spawnList[spawnIndex].point].position;
-        tmp.transform.rotation = EnemySpawnPoints[spawnList[spawnIndex].point].rotation;
 
         // 다음 스폰 딜레이로 갱신
         nextSpawnDelay = spawnList[spawnIndex++].delay;
@@ -194,11 +225,18 @@ public class Logics : MonoBehaviour
 
     }
     
-    void ReadEnemyMovePattern()
+
+    public List<Transform> GetEnemyMovePoints(int _patternNumber)
     {
+        int cnt = movePattern[_patternNumber].Count;
+        List<Transform> ret = new List<Transform>();
+        for (int i =0; i < cnt; i++)
+        {
+            ret.Add(enemyMovePoints[movePattern[_patternNumber][i]]);
+        }
 
+        return ret;
     }
-
     private void FixedUpdate()
     {
         SetAnimationDir();
@@ -207,7 +245,7 @@ public class Logics : MonoBehaviour
         else
             totalSpeed = baseSpeed;
         
-        player.transform.position += new Vector3(playerMove_H, playerMove_V, 0) * totalSpeed * Time.deltaTime;
+        player.transform.position += new Vector3(playerMove_H, playerMove_V, 0) * totalSpeed * Time.fixedDeltaTime;
 
     }
 
@@ -350,16 +388,17 @@ public class Logics : MonoBehaviour
         }
     }
 
-    public void EnemyDead(GameObject e, bool f)
+    public void EnemyDead(GameObject e, bool f, int _score)
     {
         if (!f)
         {
             e.gameObject.SetActive(false);
             string enemySize = e.GetComponent<Enemy>().GetSize();
             AudioManager.Instance.PlaySFX("EnemyDeath_" + enemySize);
-            AddScore(e.GetComponent<Enemy>().score);
+            AddScore(_score);
             GameObject fx = objPool.GetObject("explosion_" + enemySize);
             fx.transform.position = e.transform.position;
+            aliveEnemies--;
         }
     }
 

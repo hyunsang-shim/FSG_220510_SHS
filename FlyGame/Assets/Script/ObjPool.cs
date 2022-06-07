@@ -55,7 +55,7 @@ public class ObjPool : MonoBehaviour
     {
         enemySmall = new GameObject[10];
         enemyMedium = new GameObject[10];
-        enemyLarge = new GameObject[1];
+        enemyLarge = new GameObject[5];
 
         playerBulletsA = new GameObject[50];
         playerBulletsB = new GameObject[50];
@@ -230,6 +230,7 @@ public class ObjPool : MonoBehaviour
             }
         }
 
+        Debug.Log($"Out of Pool!! Expand pool size of {targetPool.ToString()}");
         return null;
     }
 }
