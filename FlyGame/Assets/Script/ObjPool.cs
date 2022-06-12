@@ -17,6 +17,7 @@ public class ObjPool : MonoBehaviour
     public GameObject prefab_bossBulletsA;
     public GameObject prefab_bossBulletsB;
     public GameObject prefab_bossBulletsC;
+    public GameObject prefab_bossBulletsD;
 
     // Prefabs for PowerUps and Etc.
     public GameObject prefab_powerUps_NormalPower;
@@ -40,6 +41,7 @@ public class ObjPool : MonoBehaviour
     GameObject[] bossBulletsA;
     GameObject[] bossBulletsB;
     GameObject[] bossBulletsC;
+    GameObject[] bossBulletsD;
 
     // PowerUps and Etc.
     GameObject[] powerUps_NormalPower;
@@ -64,6 +66,7 @@ public class ObjPool : MonoBehaviour
         bossBulletsA = new GameObject[50];
         bossBulletsB = new GameObject[50];
         bossBulletsC = new GameObject[50];
+        bossBulletsD = new GameObject[50];
 
         powerUps_NormalPower = new GameObject[5];
         powerUps_FullPower = new GameObject[5];
@@ -137,6 +140,12 @@ public class ObjPool : MonoBehaviour
             bossBulletsC[i].SetActive(false);
         }
 
+        for (int i = 0; i < bossBulletsD.Length; i++)
+        {
+            bossBulletsD[i] = Instantiate(prefab_bossBulletsD);
+            bossBulletsD[i].SetActive(false);
+        }
+
         for (int i = 0; i < powerUps_NormalPower.Length; i++)
         {
             powerUps_NormalPower[i] = Instantiate(prefab_powerUps_NormalPower);
@@ -203,6 +212,9 @@ public class ObjPool : MonoBehaviour
                 break;
             case "bossBulletsC":
                 targetPool = bossBulletsC;
+                break;
+            case "bossBulletsD":
+                targetPool = bossBulletsD;
                 break;
             case "powerUps_NormalPower":
                 targetPool = powerUps_NormalPower;

@@ -77,7 +77,7 @@ public class Logics : MonoBehaviour
 
     private void Update()
     {
-        curSpawnDelay += Time.deltaTime;
+        curSpawnDelay += Time.fixedDeltaTime;
 
         if ((curSpawnDelay > forceSpawnDelay) && (aliveEnemies == 0) && !spawnEnd)
             nextSpawnDelay = forceSpawnDelay;
@@ -185,7 +185,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemySmall");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed);
+                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, 1.2f);
                         aliveEnemies++;
                     }
                     break;
@@ -195,7 +195,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemyMedium");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Medium", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed);
+                        tmp.GetComponent<Enemy>().Init("Medium", "3-Way", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, 0.8f);
                         aliveEnemies++;
                     }
 
@@ -207,7 +207,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemySmall");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed);
+                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, 1.2f);
                         aliveEnemies++;
                     }
                     break;
@@ -327,8 +327,8 @@ public class Logics : MonoBehaviour
                     bulletLv_1.transform.position = playerShotPoint;
                     Rigidbody2D rigidLv_1 = bulletLv_1.GetComponent<Rigidbody2D>();
                     rigidLv_1.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLv_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
                     bulletLv_1.GetComponent<Bullet>().SetBulletDamage(1);
-
                     break;
                 case 2:
                     GameObject bulletLLv_2 = objPool.GetObject("playerBulletsA");
@@ -339,17 +339,18 @@ public class Logics : MonoBehaviour
                     Rigidbody2D rigidRLv_2 = bulletRLv_2.GetComponent<Rigidbody2D>();
                     rigidLLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                     rigidRLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
                     bulletLLv_2.GetComponent<Bullet>().SetBulletDamage(1);
+                    bulletRLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
                     bulletRLv_2.GetComponent<Bullet>().SetBulletDamage(1);
-
                     break;
                 case 3:
                     GameObject bulletLv_3 = objPool.GetObject("playerBulletsB");
                     bulletLv_3.transform.position = playerShotPoint;
                     Rigidbody2D rigidLv_3 = bulletLv_3.GetComponent<Rigidbody2D>();
                     rigidLv_3.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLv_3.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
                     bulletLv_3.GetComponent<Bullet>().SetBulletDamage(3);
-
                     break;
                 case 4:
                     GameObject bulletLv_4 = objPool.GetObject("playerBulletsB");
@@ -364,6 +365,9 @@ public class Logics : MonoBehaviour
                     rigidLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                     rigidLLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                     rigidRLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
+                    bulletLLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
+                    bulletRLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
                     bulletLv_4.GetComponent<Bullet>().SetBulletDamage(3);
                     bulletLLv_4.GetComponent<Bullet>().SetBulletDamage(1);
                     bulletRLv_4.GetComponent<Bullet>().SetBulletDamage(1);
@@ -377,6 +381,8 @@ public class Logics : MonoBehaviour
                     Rigidbody2D rigidRLv_5 = bulletRLv_5.GetComponent<Rigidbody2D>();
                     rigidLLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
                     rigidRLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    bulletLLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
+                    bulletRLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
                     bulletLLv_5.GetComponent<Bullet>().SetBulletDamage(3);
                     bulletRLv_5.GetComponent<Bullet>().SetBulletDamage(3);
                     break;
@@ -404,7 +410,7 @@ public class Logics : MonoBehaviour
 
     void Reload()
     {
-        curShotDelay += Time.deltaTime;
+        curShotDelay += Time.fixedDeltaTime;
     }
 
     void UpdatePlayerShotPoint()
@@ -494,5 +500,10 @@ public class Logics : MonoBehaviour
     public void Retry()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public float GetSlowModifier()
+    {
+        return slowModifyer;
     }
 }
