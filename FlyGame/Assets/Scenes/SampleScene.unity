@@ -1173,30 +1173,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fb6d82a3e4eefe49ab48ee6166f49fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objPool: {fileID: 1794621271}
   player: {fileID: 1434900220}
   animator: {fileID: 1434900225}
-  baseSpeed: 3
-  playerMove_H: 0
-  playerMove_V: 0
-  maxShotDelay: 0.2
-  BulletPower: 2
-  defaultEnemyHP_Small: 5
-  defaultEnemyHP_Medium: 12
-  defaultEnemyHP_Boss: 100
-  scoreText: {fileID: 87600359}
-  lifeImages:
-  - {fileID: 2077480156}
-  - {fileID: 778542056}
-  - {fileID: 1875417216}
-  gameOverSet: {fileID: 1188671390}
-  life: 3
-  score: 0
-  powerLevel: 1
-  aliveEnemies: 0
-  forceSpawnDelay: 1
-  curSpawnDelay: 0
-  nextSpawnDelay: 0
+  objPool: {fileID: 1794621271}
   enemyMovePoints:
   - {fileID: 1318057621}
   - {fileID: 1449935648}
@@ -1217,6 +1196,27 @@ MonoBehaviour:
   - {fileID: 482995414}
   - {fileID: 385134467}
   - {fileID: 2003376026}
+  life: 3
+  powerLevel: 1
+  BulletPower: 2
+  maxShotDelay: 0.2
+  baseSpeed: 3
+  defaultEnemyHP_Small: 5
+  defaultEnemyHP_Medium: 12
+  defaultEnemyHP_Boss: 100
+  aliveEnemies: 0
+  forceSpawnDelay: 1
+  curSpawnDelay: 0
+  nextSpawnDelay: 0
+  playerMove_H: 0
+  playerMove_V: 0
+  scoreText: {fileID: 87600359}
+  lifeImages:
+  - {fileID: 2077480156}
+  - {fileID: 778542056}
+  - {fileID: 1875417216}
+  gameOverSet: {fileID: 1188671390}
+  score: 0
 --- !u!4 &647596329
 Transform:
   m_ObjectHideFlags: 0

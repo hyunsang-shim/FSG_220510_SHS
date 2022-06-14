@@ -32,33 +32,6 @@ public class Enemy : MonoBehaviour
 
     }
 
-    void OnHit(int dmg)
-    {
-        HP -= dmg;
-
-        if (HP <= 0)
-        {
-            Logics.Instance.EnemyDead(gameObject, isDead, score);
-            isDead = true;
-        }
-        else if( HP > 0)
-        {
-            spriteRenderer.color = new Color(1, 0.8f, 0.8f, 1);
-            Invoke("SetDefaultSpriteColor", 0.25f);
-        }
-        
-        if (isDead)
-        {
-            
-        }
-    }
-
-    void SetDefaultSpriteColor()
-    {
-        if(!isDead)
-            spriteRenderer.color = new Color(1, 1, 1, 1);
-    }
-
     private void Update()
     {
         if ((Mathf.Abs(curPos.x - nextPos.x) <= 0.01f) && (Mathf.Abs(curPos.y - nextPos.y) <= 0.01f))
@@ -73,11 +46,11 @@ public class Enemy : MonoBehaviour
         Reload();
     }
 
-
     private void FixedUpdate()
     {
         MoveEnemy();
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "BulletKiller")
@@ -135,9 +108,7 @@ public class Enemy : MonoBehaviour
         else
             Invoke("FireBullet", maxShotDelay);
 
-
     }
-
 
     public void FireBullet()
     {
@@ -216,4 +187,32 @@ public class Enemy : MonoBehaviour
         transform.position = Vector3.MoveTowards(transform.position, nextPos, speed * Time.fixedDeltaTime);
         curPos = transform.position;
     }
+
+    void OnHit(int dmg)
+    {
+        HP -= dmg;
+
+        if (HP <= 0)
+        {
+            Logics.Instance.EnemyDead(gameObject, isDead, score);
+            isDead = true;
+        }
+        else if (HP > 0)
+        {
+            spriteRenderer.color = new Color(1, 0.8f, 0.8f, 1);
+            Invoke("SetDefaultSpriteColor", 0.25f);
+        }
+
+        if (isDead)
+        {
+
+        }
+    }
+
+    void SetDefaultSpriteColor()
+    {
+        if (!isDead)
+            spriteRenderer.color = new Color(1, 1, 1, 1);
+    }
+
 }

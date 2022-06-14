@@ -12,40 +12,53 @@ public class Logics : MonoBehaviour
     int spawnIndex;
     bool spawnEnd;
 
-    public ObjPool objPool;
+    
     int direction;
 
+    [Header("필수 객체")]
     public GameObject player;
     public Animator animator;
-
-
+    public ObjPool objPool;
+    public Transform[] enemyMovePoints;
     Vector3 playerShotPoint;
 
     // 밸런스 요소들
-    [SerializeField]
-    public float baseSpeed;   // 기본 기체 이동 속도    
-    public float playerMove_H, playerMove_V;
+    [Header("플레이어 밸런스 요소")]
+    public int life;
+    public int powerLevel;
+    public int BulletPower;        
     public float maxShotDelay;  // 설정된 총알 발사 딜레이
-    public int BulletPower;
+    public float baseSpeed;   // 기본 기체 이동 속도    
+
+    [Header("밸런스 요소 (디버그용)")]
     public int defaultEnemyHP_Small;
     public int defaultEnemyHP_Medium;
     public int defaultEnemyHP_Boss;
+    
 
-    // UI 요소들
-    public Text scoreText;
-    public Image[] lifeImages;
-    public GameObject gameOverSet;
-
-    public int life;
-    public int score;
-    public int powerLevel;
-
+    // 디버그용 요소
+    [Header("플레이 정보 (디버그용)")]
     public int aliveEnemies = 0;
     public float forceSpawnDelay = 0.5f;
     public float curSpawnDelay;
     public float nextSpawnDelay;
+    public float playerMove_H, playerMove_V;
+
+
+    // UI 요소들
+    [Header("UI 구성 요소")]
+    public Text scoreText;
+    public Image[] lifeImages;
+
+    [Header("UI Prefabs")]
+    public GameObject gameOverSet;
+
+    [Header("UI 내용 요소")]
+    public int score;
+
+
     List<List<int>> movePattern = new List<List<int>>();
-    public Transform[] enemyMovePoints;
+    
 
     float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
     bool isSlowed = false;          // 느려진 상태인지 확인
@@ -116,6 +129,18 @@ public class Logics : MonoBehaviour
         UpdatePlayerShotPoint();
 
         scoreText.text = string.Format("{0:n0}", score);
+    }
+
+    private void FixedUpdate()
+    {
+        SetAnimationDir();
+        if (isSlowed)
+            totalSpeed = baseSpeed * slowModifyer;
+        else
+            totalSpeed = baseSpeed;
+
+        player.transform.position += new Vector3(playerMove_H, playerMove_V, 0) * totalSpeed * Time.fixedDeltaTime;
+
     }
 
     void ReadSpawnData()
@@ -225,7 +250,6 @@ public class Logics : MonoBehaviour
 
     }
     
-
     public List<Transform> GetEnemyMovePoints(int _patternNumber)
     {
         int cnt = movePattern[_patternNumber].Count;
@@ -237,18 +261,7 @@ public class Logics : MonoBehaviour
 
         return ret;
     }
-    private void FixedUpdate()
-    {
-        SetAnimationDir();
-        if (isSlowed)
-            totalSpeed = baseSpeed * slowModifyer;
-        else
-            totalSpeed = baseSpeed;
-        
-        player.transform.position += new Vector3(playerMove_H, playerMove_V, 0) * totalSpeed * Time.fixedDeltaTime;
-
-    }
-
+    
 
     public void SetDirection(int d)
     {
@@ -502,8 +515,15 @@ public class Logics : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
+    public void StartGame()
+    {
+
+    }
+
     public float GetSlowModifier()
     {
         return slowModifyer;
     }
+
+
 }
