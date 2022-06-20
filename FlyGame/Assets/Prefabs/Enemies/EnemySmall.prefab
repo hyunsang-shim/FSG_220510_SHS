@@ -155,7 +155,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bbbcb0a1ca00f849ab328dd0079a948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
-  HP: 100
   score: 50
-  DieFx: {fileID: 6346845101254927011, guid: 5c282cc598d600540a657aa7212d6646, type: 3}
+  DieFx: {fileID: 5156775181663589347, guid: 676880819374758439439636bf379d32, type: 3}
