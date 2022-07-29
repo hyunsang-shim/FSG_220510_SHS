@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Spawner
 {
-    public float delay;
+    public float spawnDelay;
     public string type;    
     public int movePatternID;
     public float speed;
     public string dropType;
+    public float shotDelay;
 }

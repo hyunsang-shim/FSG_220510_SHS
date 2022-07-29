@@ -235,11 +235,12 @@ public class ObjPool : MonoBehaviour
 
         for (int i = 0; i < targetPool.Length; i++)
         {
-            if(!targetPool[i].activeSelf)
+            if (!targetPool[i].activeSelf)
             {
                 targetPool[i].SetActive(true);
                 return targetPool[i];
             }
+            else return null;
         }
 
         Debug.Log($"Out of Pool!! Expand pool size of {targetPool.ToString()}");

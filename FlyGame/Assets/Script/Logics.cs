@@ -48,12 +48,14 @@ public class Logics : MonoBehaviour
     // UI 요소들
     [Header("UI 구성 요소")]
     public Text scoreText;
-    public Image[] lifeImages;
+    public Sprite lifeImage;
 
     [Header("UI Prefabs")]
     public GameObject gameOverSet;
 
     [Header("UI 내용 요소")]
+    public Canvas UIRoot;
+    public GameObject lifeIconsRoot;
     public int score;
 
 
@@ -83,6 +85,18 @@ public class Logics : MonoBehaviour
         spawnList = new List<Spawner>();
         playerShotPoint = player.transform.position + Vector3.up * 0.5f;
         BulletPower = 1;
+
+        UIRoot = FindObjectOfType<Canvas>();
+
+        for(int i = 0; i < life; i++)
+        {
+            GameObject l = new GameObject();
+            l.AddComponent<Image>();
+            l.GetComponent<Image>().sprite = lifeImage;
+            l.transform.SetParent(lifeIconsRoot.transform);
+            l.name = $"life_{i}";
+        }
+
 
         ReadSpawnData();
         ReadEnemyMovePatterns();
@@ -158,16 +172,17 @@ public class Logics : MonoBehaviour
         string line = stringReader.ReadLine();
         while (stringReader != null)
         {
-            line = stringReader.ReadLine();           
-
+            line = stringReader.ReadLine();
             if (line == null) break;
             
             Spawner spawnData = new Spawner();
-            spawnData.delay = float.Parse(line.Split(',')[0]);
+            spawnData.spawnDelay = float.Parse(line.Split(',')[0]);
             spawnData.type = line.Split(',')[1];
             spawnData.movePatternID = int.Parse(line.Split(',')[2]);
             spawnData.speed = int.Parse(line.Split(',')[3]);
             spawnData.dropType = line.Split(',')[4];
+            spawnData.shotDelay = float.Parse(line.Split(',')[5]);
+
             spawnList.Add(spawnData);
         }
 
@@ -212,7 +227,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemySmall");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, 1.2f);
+                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
                     break;
@@ -222,7 +237,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemyMedium");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Medium", "3-Way", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, 0.8f);
+                        tmp.GetComponent<Enemy>().Init("Medium", "3-Way", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
 
@@ -234,7 +249,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemySmall");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, 1.2f);
+                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
                     break;
@@ -242,7 +257,7 @@ public class Logics : MonoBehaviour
         }
 
         // 다음 스폰 딜레이로 갱신
-        nextSpawnDelay = spawnList[spawnIndex++].delay;
+        nextSpawnDelay = spawnList[spawnIndex++].spawnDelay;
         
         // 리스트 끝이면 스폰 종료
         if (spawnIndex == spawnList.Count)
@@ -409,17 +424,19 @@ public class Logics : MonoBehaviour
         }
     }
 
-    public void EnemyDead(GameObject e, bool f, int _score)
+    public void EnemyDead(GameObject _enemy, bool _isDead, int _score)
     {
-        if (!f)
+        Enemy e = _enemy.GetComponent<Enemy>();
+        if (!_isDead)
         {
-            e.gameObject.SetActive(false);
-            string enemySize = e.GetComponent<Enemy>().GetSize();
+            _enemy.gameObject.SetActive(false);
+            string enemySize = e.GetSize();
             AudioManager.Instance.PlaySFX("EnemyDeath_" + enemySize);
             AddScore(_score);
             GameObject fx = objPool.GetObject("explosion_" + enemySize);
             fx.transform.position = e.transform.position;
             aliveEnemies--;
+                    
         }
     }
 
@@ -495,14 +512,14 @@ public class Logics : MonoBehaviour
         else
             RespawnPlayer();
 
-        for (int i = 0; i < lifeImages.Length; i++)
+        for (int i = 0; i < lifeIconsRoot.transform.childCount; i++)
         {
-            lifeImages[i].color = new Color(0,0,0, 0);
-        }
-
-        for (int i = 0; i < life; i++)
-        {
-            lifeImages[i].color = new Color(1, 1, 1, 1);
+            if (i < life)
+            {
+                lifeIconsRoot.transform.GetChild(i).gameObject.SetActive(true);
+            }
+            else
+                lifeIconsRoot.transform.GetChild(i).gameObject.SetActive(false);
         }
     }
 

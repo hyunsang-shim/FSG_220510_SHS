@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour
     List<Transform> MovePoints = new List<Transform>();
     Vector3 curPos, nextPos;
     Vector3 hpbarOffset;
+    string dropType;
 
     private void Awake()
     {
@@ -36,6 +37,7 @@ public class Enemy : MonoBehaviour
         hpbar = GetComponentInChildren<Slider>();
         hpbar.maxValue = HP;
         hpbarOffset = new Vector3(0, -0.4f, 0);
+        
     }
 
     private void Start()
@@ -92,7 +94,7 @@ public class Enemy : MonoBehaviour
         size = s;
     }
 
-    public void Init(string _size, string _shotType, int _movePattern, float _speed, float _shotDelay = 9999)
+    public void Init(string _size, string _shotType, int _movePattern, float _speed, string _dropType = "None", float _shotDelay = 9999)
     {
 
         size = _size;
@@ -112,14 +114,11 @@ public class Enemy : MonoBehaviour
         transform.position = MovePoints[0].position;
         nextPos = MovePoints[1].position;
         positionID = 1;
+        dropType = _dropType;
 
-        curShotDelay  = maxShotDelay = _shotDelay;
+        curShotDelay  = maxShotDelay;
+        maxShotDelay = _shotDelay;
 
-        if (maxShotDelay == 9999)
-        {
-            Invoke("FireBullet", 1);
-        }
-        else
             InvokeRepeating("FireBullet", maxShotDelay, maxShotDelay);
 
     }
@@ -149,13 +148,16 @@ public class Enemy : MonoBehaviour
                             break;
                     }
 
-                    bullet.transform.position = transform.position;
-                    bullet.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
-                    Rigidbody2D rigidLv_1 = bullet.GetComponent<Rigidbody2D>();
+                    if (bullet != null)
+                    {
+                        bullet.transform.position = transform.position;
+                        bullet.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+                        Rigidbody2D rigidLv_1 = bullet.GetComponent<Rigidbody2D>();
 
-                    Vector2 BulletSpeed =(targetPos - (Vector2)transform.position).normalized * 3;
-                    rigidLv_1.AddForce(BulletSpeed, ForceMode2D.Impulse);
-                    bullet.GetComponent<Bullet>().SetBullet(BulletSpeed, false);
+                        Vector2 BulletSpeed = (targetPos - (Vector2)transform.position).normalized * 3;
+                        rigidLv_1.AddForce(BulletSpeed, ForceMode2D.Impulse);
+                        bullet.GetComponent<Bullet>().SetBullet(BulletSpeed, false);                     
+                    }
                     break;
                 }
             case "3-Way":
@@ -164,25 +166,34 @@ public class Enemy : MonoBehaviour
                     GameObject bullet1, bullet2, bullet3;
                     Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * 3;
                     Vector2 rand = Vector2.one;
-                    bullet1 = Logics.Instance.objPool.GetObject("bossBulletsD"); 
-                    bullet1.transform.position = transform.position;
-                    bullet1.GetComponent<Bullet>().SetBullet(dirVec1, true);               
-                    Rigidbody2D rig1 = bullet1.GetComponent<Rigidbody2D>();
-
+                    bullet1 = Logics.Instance.objPool.GetObject("bossBulletsD");
+                    if (bullet1 != null)
+                    {
+                        bullet1.transform.position = transform.position;
+                        bullet1.GetComponent<Bullet>().SetBullet(dirVec1, true);
+                        Rigidbody2D rig1 = bullet1.GetComponent<Rigidbody2D>();
+                    }
 
                     Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * 3;
                     bullet2 = Logics.Instance.objPool.GetObject("bossBulletsD");
-                    bullet2.transform.position = transform.position;
-                    dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 10) * -1 + dirVec2.x, -1).normalized * 3;
-                    bullet2.GetComponent<Bullet>().SetBullet(dirVec2, true);
-                    Rigidbody2D rig2 = bullet2.GetComponent<Rigidbody2D>();
+
+                    if (bullet2 != null)
+                    {
+                        bullet2.transform.position = transform.position;
+                        dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 10) * -1 + dirVec2.x, -1).normalized * 3;
+                        bullet2.GetComponent<Bullet>().SetBullet(dirVec2, true);
+                        Rigidbody2D rig2 = bullet2.GetComponent<Rigidbody2D>();
+                    }
 
                     Vector2 dirVec3 = (targetPos - (Vector2)transform.position);
                     bullet3 = Logics.Instance.objPool.GetObject("bossBulletsD");
-                    bullet3.transform.position = transform.position;
-                    dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * 10) + dirVec3.x, -1).normalized * 3;
-                    bullet3.GetComponent<Bullet>().SetBullet(dirVec3, true);
-                    Rigidbody2D rig3 = bullet3.GetComponent<Rigidbody2D>();
+                    if (bullet3 != null)
+                    {
+                        bullet3.transform.position = transform.position;
+                        dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * 10) + dirVec3.x, -1).normalized * 3;
+                        bullet3.GetComponent<Bullet>().SetBullet(dirVec3, true);
+                        Rigidbody2D rig3 = bullet3.GetComponent<Rigidbody2D>();
+                    }
                     break; 
                 }
         }
