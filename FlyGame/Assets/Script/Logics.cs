@@ -128,7 +128,7 @@ public class Logics : MonoBehaviour
         Reload();
         UpdatePlayerShotPoint();
 
-        scoreText.text = string.Format("{0:n0}", score);
+        scoreText.text = string.Format("Score: {0:n0}", score);
     }
 
     private void FixedUpdate()
@@ -155,9 +155,10 @@ public class Logics : MonoBehaviour
 
         StringReader stringReader = new StringReader(txtFile.text);
 
+        string line = stringReader.ReadLine();
         while (stringReader != null)
         {
-            string line = stringReader.ReadLine();           
+            line = stringReader.ReadLine();           
 
             if (line == null) break;
             
@@ -166,6 +167,7 @@ public class Logics : MonoBehaviour
             spawnData.type = line.Split(',')[1];
             spawnData.movePatternID = int.Parse(line.Split(',')[2]);
             spawnData.speed = int.Parse(line.Split(',')[3]);
+            spawnData.dropType = line.Split(',')[4];
             spawnList.Add(spawnData);
         }
 

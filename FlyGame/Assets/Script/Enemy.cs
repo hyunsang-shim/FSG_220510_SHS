@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class Enemy : MonoBehaviour
     int positionID = 1;
     float curShotDelay, maxShotDelay;
     bool shotOpen = false;
+    public Slider hpbar;
+
 
     Rigidbody2D rig2d;
     SpriteRenderer spriteRenderer;
@@ -22,6 +25,7 @@ public class Enemy : MonoBehaviour
     string MyShotType;
     List<Transform> MovePoints = new List<Transform>();
     Vector3 curPos, nextPos;
+    Vector3 hpbarOffset;
 
     private void Awake()
     {
@@ -29,7 +33,15 @@ public class Enemy : MonoBehaviour
         rig2d = GetComponent<Rigidbody2D>();
         movePatternID = 0;
         curPos = nextPos = transform.position;
+        hpbar = GetComponentInChildren<Slider>();
+        hpbar.maxValue = HP;
+        hpbarOffset = new Vector3(0, -0.4f, 0);
+    }
 
+    private void Start()
+    {
+        hpbar.maxValue = HP;
+        hpbar.value = HP;
     }
 
     private void Update()
@@ -44,6 +56,8 @@ public class Enemy : MonoBehaviour
 
         FireBullet();
         Reload();
+
+        hpbar.transform.parent.position = transform.position + hpbarOffset;
     }
 
     private void FixedUpdate()
@@ -53,16 +67,16 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "BulletKiller")
+        if(collision.gameObject.CompareTag("BulletKiller"))
         {
             gameObject.SetActive(false);
         }
-        else if(collision.gameObject.tag == "PlayerBullet")
+        else if(collision.gameObject.CompareTag("PlayerBullet"))
         {            
             OnHit(collision.gameObject.GetComponent<Bullet>().GetBulletDamage());
             collision.gameObject.SetActive(false);
         }
-        else if(collision.gameObject.tag == "Border")
+        else if(collision.gameObject.CompareTag("Border"))
         {
             shotOpen = !shotOpen;;
         }
@@ -106,7 +120,7 @@ public class Enemy : MonoBehaviour
             Invoke("FireBullet", 1);
         }
         else
-            Invoke("FireBullet", maxShotDelay);
+            InvokeRepeating("FireBullet", maxShotDelay, maxShotDelay);
 
     }
 
@@ -179,7 +193,7 @@ public class Enemy : MonoBehaviour
     public void Reload()
     {
         if (maxShotDelay != 9999 || shotOpen)
-        curShotDelay += Time.fixedDeltaTime;
+            curShotDelay += Time.fixedDeltaTime;
     }
 
     private void MoveEnemy()
@@ -200,6 +214,7 @@ public class Enemy : MonoBehaviour
         else if (HP > 0)
         {
             spriteRenderer.color = new Color(1, 0.8f, 0.8f, 1);
+            hpbar.value = HP;
             Invoke("SetDefaultSpriteColor", 0.25f);
         }
 

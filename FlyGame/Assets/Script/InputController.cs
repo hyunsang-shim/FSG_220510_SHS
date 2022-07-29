@@ -36,6 +36,7 @@ public class InputController : MonoBehaviour
         movementH = Input.GetAxisRaw("Horizontal");
         movementV = Input.GetAxisRaw("Vertical");
 
+
         /// ¹æÇâ°ª
         /// 9   1   3
         /// 8   0   2

@@ -8,4 +8,5 @@ public class Spawner
     public string type;    
     public int movePatternID;
     public float speed;
+    public string dropType;
 }
