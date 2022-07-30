@@ -103,9 +103,8 @@ public class Logics : MonoBehaviour
             l.transform.SetParent(lifeIconsRoot.transform);
             l.name = $"life_{i}";
         }
-
-        BossHPBar.SetActive(false);
-
+        BossHPBar.gameObject.SetActive(false);
+        Debug.Log($"BossHPBar is {BossHPBar.activeSelf}");
         highScore = PlayerPrefs.GetInt("highScore", 5000);
         highScoreText.text = $"HighScore: {highScore}";
         ReadSpawnData();
@@ -139,9 +138,7 @@ public class Logics : MonoBehaviour
         }
 #endif
 
-        Fire();
-        Reload();
-        UpdatePlayerShotPoint();
+       
 
         scoreText.text = string.Format("Score: {0:n0}", score);
         highScoreText.text = string.Format("High Score: {0:n0}", highScore);
@@ -149,6 +146,10 @@ public class Logics : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Fire();
+        Reload();
+        UpdatePlayerShotPoint();
+
         curSpawnDelay += Time.fixedDeltaTime;
 
         if ((curSpawnDelay > forceSpawnDelay) && (aliveEnemies == 0) && !spawnEnd)
@@ -392,11 +393,11 @@ public class Logics : MonoBehaviour
                     bulletLLv_3.transform.position = playerShotPoint + Vector3.left * 0.1f;
                     bulletMLv_3.transform.position = playerShotPoint;
                     bulletRLv_3.transform.position = playerShotPoint + Vector3.right * 0.1f;
-                    bulletLLv_3.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
-                    bulletRLv_3.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
-                    bulletLLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
+                    bulletLLv_3.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.18f)));
+                    bulletRLv_3.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.18f));
+                    bulletLLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.18f)), 1).normalized * 10, 1, false);
                     bulletMLv_3.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletRLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
+                    bulletRLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.18f), 1).normalized * 10, 1, false);
                     break; 
                     
                     //GameObject bulletLv_3 = objPool.GetObject("playerBulletsB");
@@ -415,20 +416,20 @@ public class Logics : MonoBehaviour
                     GameObject bulletRLv_4_2 = objPool.GetObject("playerBulletsA");
                     bulletLLv_4_1.transform.position = playerShotPoint + Vector3.left * 0.1f;
                     bulletLLv_4_2.transform.position = playerShotPoint + Vector3.left * 0.2f;
-                    bulletLLv_4_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
-                    bulletLLv_4_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
                     bulletMLv_4_1.transform.position = playerShotPoint + Vector3.left * 0.1f;
                     bulletMLv_4_2.transform.position = playerShotPoint + Vector3.right * 0.1f;
                     bulletRLv_4_1.transform.position = playerShotPoint + Vector3.right * 0.1f;
                     bulletRLv_4_2.transform.position = playerShotPoint + Vector3.right * 0.2f;
+                    bulletLLv_4_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
+                    bulletLLv_4_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.18f)));
                     bulletRLv_4_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
-                    bulletRLv_4_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
+                    bulletRLv_4_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.18f));
                     bulletLLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
-                    bulletLLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
+                    bulletLLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.18f)), 1).normalized * 10, 1, false);
                     bulletMLv_4_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletMLv_4_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletRLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
-                    bulletRLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
+                    bulletRLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.18f), 1).normalized * 10, 1, false);
                     break;
 
                 //GameObject bulletLv_4 = objPool.GetObject("playerBulletsB");
@@ -453,14 +454,14 @@ public class Logics : MonoBehaviour
                     bulletRLv_5_1.transform.position = playerShotPoint + Vector3.right * 0.1f;
                     bulletRLv_5_2.transform.position = playerShotPoint + Vector3.right * 0.2f;
                     bulletLLv_5_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
-                    bulletLLv_5_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
+                    bulletLLv_5_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.18f)));
                     bulletRLv_5_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
-                    bulletRLv_5_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
+                    bulletRLv_5_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.18f));
                     bulletLLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
-                    bulletLLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
+                    bulletLLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.18f)), 1).normalized * 10, 1, false);
                     bulletMLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 3, false);
                     bulletRLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
-                    bulletRLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
+                    bulletRLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.18f), 1).normalized * 10, 1, false);
 
                     break;
                     //GameObject bulletLLv_5 = objPool.GetObject("playerBulletsB");
@@ -597,12 +598,7 @@ public class Logics : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
-
-    public void StartGame()
-    {
-
-    }
-
+    
     public float GetSlowModifier()
     {
         return slowModifyer;

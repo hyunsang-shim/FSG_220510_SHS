@@ -11,6 +11,7 @@ public class BackgroundScroll : MonoBehaviour
     public Texture BossBG;
     public Texture BossBGPhase2;
     bool changedToBossStageBG = false;
+    bool changedToBossPhase2 = false;
 
     private void Start()
     {
@@ -41,18 +42,18 @@ public class BackgroundScroll : MonoBehaviour
         if (Logics.Instance.GetBossAppearState() && !changedToBossStageBG)
         {
             render.material.mainTexture = BossBG;
-            render.material.mainTextureScale = new Vector2(12,20);
+            render.material.mainTextureScale = new Vector2(12,22);
             changedToBossStageBG = true;
             scrollSpeedX = 5;
             scrollSpeedY = -scrollSpeedX;
         }
 
-        if(Logics.Instance.GetBossPhase2())
+        if(Logics.Instance.GetBossPhase2() && !changedToBossPhase2)
         {
             render.material.mainTexture = BossBGPhase2;
-            render.material.mainTextureScale = new Vector2(12, 20);
-            changedToBossStageBG = true;
-            scrollSpeedX = -7;
+            render.material.mainTextureScale = new Vector2(6, 11);
+            changedToBossPhase2 = true;
+            scrollSpeedX = 5;
             scrollSpeedY = -scrollSpeedX;
 
         }

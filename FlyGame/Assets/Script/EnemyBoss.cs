@@ -7,42 +7,58 @@ public class EnemyBoss : MonoBehaviour
     float speed = 4;
     int HP = 1000;
     float coolTime = 3f;
+    float shotDelay = 0.5f;
     float curDelay = 0;
+    float moveDelay = 0;
+    bool isCanMove = false;
     Vector2 TopLeft = new Vector2(-5, 8);
     Vector2 BottomRight = new Vector2(5, -6);
 
     int score = 5000;
     public GameObject[] dieFx;
     bool shotOpen;
+    bool isDead = false;
     Rigidbody2D rig;
     Collider2D col;
     Animator anim;
+    SpriteRenderer spr;
     Vector3 curPos, nextPos;
+
+    // 패턴 관련
+    public int patternIdx;
+    public int curPatternCount;
+    public int[] maxPatternCount;
 
     private void Awake()
     {
         anim = GetComponent<Animator>();
+        spr = GetComponent<SpriteRenderer>();
+
+    }
+
+    private void Start()
+    {
+
         curPos = transform.position;
         nextPos = new Vector2(0, 5);
-
         Logics.Instance.SetBossHPUI(HP);
-    }
-    private void Update()
-    {
+        isCanMove = false;
         Move();
-        Attack();
-        Reload();
     }
-    private void Start()
+
+    private void FixedUpdate()
     {
     }
 
     void Move()
     {
-        transform.position = Vector2.MoveTowards(curPos, nextPos, speed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(curPos, nextPos, speed * Time.fixedDeltaTime);
         curPos = transform.position;
 
-        if (shotOpen)
+        if (curPos == nextPos)
+            isCanMove = true;
+
+        if (isCanMove)
         {
             curPos = transform.position;
             nextPos = new Vector2(
@@ -58,10 +74,14 @@ public class EnemyBoss : MonoBehaviour
                 anim.SetInteger("Direction", 1);
             else
                 anim.SetInteger("Direction", 0);
+
+            isCanMove = false;
         }
 
-
-        Debug.Log($"Move() false: CurPos = {curPos}, nextPos = {nextPos}");
+        if (curPos != nextPos)
+            Move();
+        else
+            Invoke("SelectPattern", coolTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -87,83 +107,134 @@ public class EnemyBoss : MonoBehaviour
 
         if (HP < 1)
             Die();
+
+        if (HP > 0)
+        {
+            spr.color = new Color(1, 0.8f, 0.8f, 1);
+            Invoke("SetDefaultSpriteColor", 0.35f);
+        }
+
     }
 
+    void SetDefaultSpriteColor()
+    {
+        if (!isDead)
+            spr.color = new Color(1, 1, 1, 1);
+    }
+
+    void SelectPattern()
+    {
+        patternIdx = patternIdx == 3 ? 0 : patternIdx + 1;
+        curPatternCount = 0;
+
+        switch(patternIdx)
+        {
+            case 0:
+                Move();
+                break;
+            case 1:
+                FireForward();
+                break;
+            case 2:
+                FireShotgun();
+                break;
+            case 3:
+                FireRound();
+                break;
+        }
+    }
+
+    void FireForward() {
+        Debug.Log($"정면 5연발");
+
+        curPatternCount++;
+
+        Vector2 targetPos = Logics.Instance.player.transform.position;
+
+        GameObject bullet;
+        bullet = Logics.Instance.objPool.GetObject("BossBulletsA");
+        if (bullet != null)
+        {
+            bullet.transform.position = transform.position;
+            Vector2 BulletSpeed = (targetPos - (Vector2)transform.position).normalized * 3;
+            bullet.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false);
+        }
+
+
+
+        if (curPatternCount < maxPatternCount[patternIdx])
+            Invoke("FireForward", shotDelay);
+        else
+            Invoke("SelectPattern", coolTime);
+
+    }
+    void FireShotgun() {
+
+        Debug.Log($"정면 샷건 3연발");
+        curPatternCount++;
+
+        Vector2 targetPos = Logics.Instance.player.transform.position;
+
+        GameObject bullet1, bullet2, bullet3;
+        Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * 3;
+        bullet1 = Logics.Instance.objPool.GetObject("bossBulletsB");
+        if (bullet1 != null)
+        {
+            bullet1.transform.position = transform.position;
+            bullet1.GetComponent<Bullet>().SetBullet(dirVec1, 1, true);
+            Rigidbody2D rig1 = bullet1.GetComponent<Rigidbody2D>();
+        }
+
+        Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * 3;
+        bullet2 = Logics.Instance.objPool.GetObject("bossBulletsB");
+
+        if (bullet2 != null)
+        {
+            bullet2.transform.position = transform.position;
+            dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.15f) + dirVec2.x, -1).normalized * 3;
+            bullet2.GetComponent<Bullet>().SetBullet(dirVec2, 1, true);
+            Rigidbody2D rig2 = bullet2.GetComponent<Rigidbody2D>();
+        }
+
+        Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * 3;
+        bullet3 = Logics.Instance.objPool.GetObject("bossBulletsB");
+        if (bullet3 != null)
+        {
+            bullet3.transform.position = transform.position;
+            dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)) + dirVec3.x, -1).normalized * 3;
+            bullet3.GetComponent<Bullet>().SetBullet(dirVec3, 1, true);
+            Rigidbody2D rig3 = bullet3.GetComponent<Rigidbody2D>();
+        }
+        if (curPatternCount < maxPatternCount[patternIdx])
+            Invoke("FireShotgun", shotDelay);
+        else
+            Invoke("SelectPattern", coolTime);
+    }
+    void FireRound() {
+        Debug.Log($"반원으로 3발"); 
+        curPatternCount++;
+        
+        if (curPatternCount < maxPatternCount[patternIdx])
+            Invoke("FireRound", shotDelay);
+        else
+            Invoke("SelectPattern", coolTime);
+    }
     void Die()
     {
         Logics.Instance.GameClear();
     }
 
-    void Reload()
+    void LateUpdate()
     {
         curDelay += Time.fixedDeltaTime;
 
         if (curDelay >= coolTime)
             shotOpen = true;
+
+        moveDelay += Time.fixedDeltaTime;
+        if (moveDelay >= coolTime)
+            isCanMove = true;
+        
     }
-    void Attack()
-    {
-        if (!shotOpen) return;
-
-        int shotType = 0;
-
-
-        Vector2 targetPos = Logics.Instance.player.transform.position;
-
-        switch (shotType)
-        {
-            case 0:     // 직선 5연사
-                {
-
-                    GameObject bullet;
-                    bullet = Logics.Instance.objPool.GetObject("BossBulletsA");
-                    if (bullet != null)
-                    {
-                        bullet.transform.position = transform.position;
-                        Vector2 BulletSpeed = (targetPos - (Vector2)transform.position).normalized * 3;
-                        bullet.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false);
-                    }
-
-                    break;
-                }
-            case 1:     // 3방향 5연사
-                {
-
-                    GameObject bullet1, bullet2, bullet3;
-                    Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * 3;
-                    bullet1 = Logics.Instance.objPool.GetObject("bossBulletsB");
-                    if (bullet1 != null)
-                    {
-                        bullet1.transform.position = transform.position;
-                        bullet1.GetComponent<Bullet>().SetBullet(dirVec1, 1, true);
-                        Rigidbody2D rig1 = bullet1.GetComponent<Rigidbody2D>();
-                    }
-
-                    Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * 3;
-                    bullet2 = Logics.Instance.objPool.GetObject("bossBulletsB");
-
-                    if (bullet2 != null)
-                    {
-                        bullet2.transform.position = transform.position;
-                        dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.15f) + dirVec2.x, -1).normalized * 3;
-                        bullet2.GetComponent<Bullet>().SetBullet(dirVec2, 1, true);
-                        Rigidbody2D rig2 = bullet2.GetComponent<Rigidbody2D>();
-                    }
-
-                    Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * 3;
-                    bullet3 = Logics.Instance.objPool.GetObject("bossBulletsB");
-                    if (bullet3 != null)
-                    {
-                        bullet3.transform.position = transform.position;
-                        dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)) + dirVec3.x, -1).normalized * 3;
-                        bullet3.GetComponent<Bullet>().SetBullet(dirVec3, 1, true);
-                        Rigidbody2D rig3 = bullet3.GetComponent<Rigidbody2D>();
-                    }
-                    break;
-                }
-        }
-
-        curDelay = 0;
-        shotType = shotType == 0 ? 1 : 0;
-    }
+   
 }
