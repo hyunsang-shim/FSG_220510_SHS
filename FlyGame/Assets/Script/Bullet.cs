@@ -35,7 +35,7 @@ public class Bullet : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "BulletKiller")
+        if (collision.gameObject.CompareTag("BulletKiller"))
         {
             gameObject.SetActive(false);
         }
@@ -65,7 +65,7 @@ public class Bullet : MonoBehaviour
     }
 
 
-    public void SetBullet(Vector2 _speed, bool _rot = false, bool _slowable = false)
+    public void SetBullet(Vector2 _speed, int _dmg, bool _rot = false, bool _slowable = false)
     {
         rig.velocity = oldVelocity = _speed;
         newVelocity = oldVelocity / Logics.Instance.GetSlowModifier();
@@ -73,6 +73,8 @@ public class Bullet : MonoBehaviour
         isRotate = _rot;
 
         isSlowable = _slowable;
+
+        dmg = _dmg;
     }
 
 }

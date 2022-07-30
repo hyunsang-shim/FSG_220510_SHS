@@ -55,18 +55,18 @@ public class ObjPool : MonoBehaviour
 
     private void Awake()
     {
-        enemySmall = new GameObject[10];
+        enemySmall = new GameObject[30];
         enemyMedium = new GameObject[10];
         enemyLarge = new GameObject[5];
 
-        playerBulletsA = new GameObject[50];
-        playerBulletsB = new GameObject[50];
+        playerBulletsA = new GameObject[100];
+        playerBulletsB = new GameObject[80];
         enemyBulletsA = new GameObject[50];
         enemyBulletsB = new GameObject[50];
-        bossBulletsA = new GameObject[50];
-        bossBulletsB = new GameObject[50];
-        bossBulletsC = new GameObject[50];
-        bossBulletsD = new GameObject[50];
+        bossBulletsA = new GameObject[80];
+        bossBulletsB = new GameObject[80];
+        bossBulletsC = new GameObject[80];
+        bossBulletsD = new GameObject[80];
 
         powerUps_NormalPower = new GameObject[5];
         powerUps_FullPower = new GameObject[5];
@@ -240,8 +240,8 @@ public class ObjPool : MonoBehaviour
                 targetPool[i].SetActive(true);
                 return targetPool[i];
             }
-            else return null;
         }
+
 
         Debug.Log($"Out of Pool!! Expand pool size of {targetPool.ToString()}");
         return null;

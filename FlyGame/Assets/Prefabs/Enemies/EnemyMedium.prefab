@@ -111,8 +111,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0.0305, y: 0.753}
-  m_SizeDelta: {x: 12, y: 2}
+  m_AnchoredPosition: {x: 0, y: -1.4}
+  m_SizeDelta: {x: 16, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8465815489604779619
 Canvas:
@@ -124,7 +124,7 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
-  m_Camera: {fileID: 5615173813977229922, guid: 7ccceae45c97a9d43bffd33821e88b84, type: 3}
+  m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 1
   m_ReceivesEvents: 1
@@ -328,12 +328,12 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.18}
+  m_Offset: {x: -0.012173891, y: -0.33043134}
   serializedVersion: 2
-  m_Radius: 0.4
+  m_Radius: 0.8761445
 --- !u!50 &8147075419672006895
 Rigidbody2D:
   serializedVersion: 4
@@ -369,7 +369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   score: 250
   DieFx: {fileID: 6088837143376474335, guid: aa5c940a676add6469b1c082b45fe5cd, type: 3}
-  hpbar: {fileID: 0}
+  hpbar: {fileID: 4545300489725327383}
 --- !u!1 &4475343509742670843
 GameObject:
   m_ObjectHideFlags: 0

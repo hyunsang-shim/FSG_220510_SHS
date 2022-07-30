@@ -96,7 +96,7 @@ public class InputController : MonoBehaviour
 
         if (collision.gameObject.tag == "Border")
         {
-            switch(collision.gameObject.name)
+            switch (collision.gameObject.name)
             {
                 case "Top":
                     isTouchTop = true;
@@ -113,7 +113,7 @@ public class InputController : MonoBehaviour
             }
         }
 
-        if(collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
+        if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
         {
             if (!isHit)
             {

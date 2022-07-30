@@ -7,10 +7,9 @@ public class Enemy : MonoBehaviour
 {
     float speed;
     int HP;
-    
+    bool valunable;
     public int score;
     public GameObject DieFx;
-    GameObject bullets;
     int movePatternID;
     int positionID = 1;
     float curShotDelay, maxShotDelay;
@@ -36,7 +35,7 @@ public class Enemy : MonoBehaviour
         curPos = nextPos = transform.position;
         hpbar = GetComponentInChildren<Slider>();
         hpbar.maxValue = HP;
-        hpbarOffset = new Vector3(0, -0.4f, 0);
+        hpbarOffset = new Vector3(0, -0.5f, 0);
         
     }
 
@@ -59,9 +58,17 @@ public class Enemy : MonoBehaviour
         FireBullet();
         Reload();
 
-        hpbar.transform.parent.position = transform.position + hpbarOffset;
+        //hpbar.transform.parent.position = transform.position + hpbarOffset;
+    }
+    private void OnEnable()
+    {
+        Invoke("SetValunable", 2);
     }
 
+    void SetValunable()
+    {
+        valunable = true;
+    }
     private void FixedUpdate()
     {
         MoveEnemy();
@@ -116,10 +123,15 @@ public class Enemy : MonoBehaviour
         positionID = 1;
         dropType = _dropType;
 
-        curShotDelay  = maxShotDelay;
+        curShotDelay  = 0;
         maxShotDelay = _shotDelay;
 
-            InvokeRepeating("FireBullet", maxShotDelay, maxShotDelay);
+        hpbar.maxValue = HP;
+        hpbar.value = HP;
+
+        shotOpen = false;
+
+        InvokeRepeating("FireBullet", 2, maxShotDelay);
 
     }
 
@@ -156,7 +168,7 @@ public class Enemy : MonoBehaviour
 
                         Vector2 BulletSpeed = (targetPos - (Vector2)transform.position).normalized * 3;
                         rigidLv_1.AddForce(BulletSpeed, ForceMode2D.Impulse);
-                        bullet.GetComponent<Bullet>().SetBullet(BulletSpeed, false);                     
+                        bullet.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false);                     
                     }
                     break;
                 }
@@ -165,12 +177,11 @@ public class Enemy : MonoBehaviour
 
                     GameObject bullet1, bullet2, bullet3;
                     Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * 3;
-                    Vector2 rand = Vector2.one;
                     bullet1 = Logics.Instance.objPool.GetObject("bossBulletsD");
                     if (bullet1 != null)
                     {
                         bullet1.transform.position = transform.position;
-                        bullet1.GetComponent<Bullet>().SetBullet(dirVec1, true);
+                        bullet1.GetComponent<Bullet>().SetBullet(dirVec1, 1, true);
                         Rigidbody2D rig1 = bullet1.GetComponent<Rigidbody2D>();
                     }
 
@@ -180,18 +191,18 @@ public class Enemy : MonoBehaviour
                     if (bullet2 != null)
                     {
                         bullet2.transform.position = transform.position;
-                        dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 10) * -1 + dirVec2.x, -1).normalized * 3;
-                        bullet2.GetComponent<Bullet>().SetBullet(dirVec2, true);
+                        dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.15f) + dirVec2.x, -1).normalized * 3;
+                        bullet2.GetComponent<Bullet>().SetBullet(dirVec2, 1, true);
                         Rigidbody2D rig2 = bullet2.GetComponent<Rigidbody2D>();
                     }
 
-                    Vector2 dirVec3 = (targetPos - (Vector2)transform.position);
+                    Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * 3;
                     bullet3 = Logics.Instance.objPool.GetObject("bossBulletsD");
                     if (bullet3 != null)
                     {
                         bullet3.transform.position = transform.position;
-                        dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * 10) + dirVec3.x, -1).normalized * 3;
-                        bullet3.GetComponent<Bullet>().SetBullet(dirVec3, true);
+                        dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)) + dirVec3.x, -1).normalized * 3;
+                        bullet3.GetComponent<Bullet>().SetBullet(dirVec3, 1, true);
                         Rigidbody2D rig3 = bullet3.GetComponent<Rigidbody2D>();
                     }
                     break; 
@@ -215,7 +226,8 @@ public class Enemy : MonoBehaviour
 
     void OnHit(int dmg)
     {
-        HP -= dmg;
+        if(valunable)
+            HP -= dmg;
 
         if (HP <= 0)
         {
@@ -231,7 +243,10 @@ public class Enemy : MonoBehaviour
 
         if (isDead)
         {
-
+            if (dropType != "None")
+            {
+                Logics.Instance.DropItem(transform.position, dropType);
+            }
         }
     }
 

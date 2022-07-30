@@ -21,6 +21,8 @@ public class Logics : MonoBehaviour
     public ObjPool objPool;
     public Transform[] enemyMovePoints;
     Vector3 playerShotPoint;
+    public GameObject[] dropItems;
+    public GameObject BossObject;
 
     // 밸런스 요소들
     [Header("플레이어 밸런스 요소")]
@@ -29,6 +31,8 @@ public class Logics : MonoBehaviour
     public int BulletPower;        
     public float maxShotDelay;  // 설정된 총알 발사 딜레이
     public float baseSpeed;   // 기본 기체 이동 속도    
+    bool isBossAppear = false;
+    int highScore;
 
     [Header("밸런스 요소 (디버그용)")]
     public int defaultEnemyHP_Small;
@@ -48,10 +52,13 @@ public class Logics : MonoBehaviour
     // UI 요소들
     [Header("UI 구성 요소")]
     public Text scoreText;
+    public Text highScoreText;
     public Sprite lifeImage;
+    public GameObject BossHPBar;
 
     [Header("UI Prefabs")]
     public GameObject gameOverSet;
+    public GameObject gameClearSet;
 
     [Header("UI 내용 요소")]
     public Canvas UIRoot;
@@ -97,27 +104,21 @@ public class Logics : MonoBehaviour
             l.name = $"life_{i}";
         }
 
+        BossHPBar.SetActive(false);
 
+        highScore = PlayerPrefs.GetInt("highScore", 5000);
+        highScoreText.text = $"HighScore: {highScore}";
         ReadSpawnData();
         ReadEnemyMovePatterns();
     }
 
     private void Update()
     {
-        curSpawnDelay += Time.fixedDeltaTime;
-
-        if ((curSpawnDelay > forceSpawnDelay) && (aliveEnemies == 0) && !spawnEnd)
-            nextSpawnDelay = forceSpawnDelay;
-
-        if((curSpawnDelay > nextSpawnDelay) && !spawnEnd)
-        {
-            SpawnEnemy();
-            curSpawnDelay = 0;
-        }
+        
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.KeypadPlus))
-            ++BulletPower;
+            AddPowerUp();
 
         if (Input.GetKeyDown(KeyCode.KeypadMinus))
             --BulletPower;
@@ -143,10 +144,22 @@ public class Logics : MonoBehaviour
         UpdatePlayerShotPoint();
 
         scoreText.text = string.Format("Score: {0:n0}", score);
+        highScoreText.text = string.Format("High Score: {0:n0}", highScore);
     }
 
     private void FixedUpdate()
     {
+        curSpawnDelay += Time.fixedDeltaTime;
+
+        if ((curSpawnDelay > forceSpawnDelay) && (aliveEnemies == 0) && !spawnEnd)
+            nextSpawnDelay = forceSpawnDelay;
+
+        if ((curSpawnDelay > nextSpawnDelay) && !spawnEnd)
+        {
+            SpawnEnemy();
+            curSpawnDelay = 0;
+        }
+
         SetAnimationDir();
         if (isSlowed)
             totalSpeed = baseSpeed * slowModifyer;
@@ -227,6 +240,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemySmall");
                     if (tmp != null)
                     {
+                        //tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
@@ -260,9 +274,12 @@ public class Logics : MonoBehaviour
         nextSpawnDelay = spawnList[spawnIndex++].spawnDelay;
         
         // 리스트 끝이면 스폰 종료
+        // 보스전 시작 준비
         if (spawnIndex == spawnList.Count)
         {
             spawnEnd = true;
+            Invoke("StartBossStage", 3f);
+            AudioManager.Instance.StopBGM();
         }
 
     }
@@ -352,70 +369,107 @@ public class Logics : MonoBehaviour
         {
             switch (BulletPower)
             {
-                case 1:
+                case 1:     //      |
                     GameObject bulletLv_1 = objPool.GetObject("playerBulletsA");
                     bulletLv_1.transform.position = playerShotPoint;
-                    Rigidbody2D rigidLv_1 = bulletLv_1.GetComponent<Rigidbody2D>();
-                    rigidLv_1.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    bulletLv_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
+                    bulletLv_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletLv_1.GetComponent<Bullet>().SetBulletDamage(1);
                     break;
-                case 2:
+                case 2:     //       ||
                     GameObject bulletLLv_2 = objPool.GetObject("playerBulletsA");
                     GameObject bulletRLv_2 = objPool.GetObject("playerBulletsA");
                     bulletLLv_2.transform.position = playerShotPoint + Vector3.left * 0.1f;
                     bulletRLv_2.transform.position = playerShotPoint + Vector3.right * 0.1f;
-                    Rigidbody2D rigidLLv_2 = bulletLLv_2.GetComponent<Rigidbody2D>();
-                    Rigidbody2D rigidRLv_2 = bulletRLv_2.GetComponent<Rigidbody2D>();
-                    rigidLLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    rigidRLv_2.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    bulletLLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
+                    bulletLLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletLLv_2.GetComponent<Bullet>().SetBulletDamage(1);
-                    bulletRLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
+                    bulletRLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletRLv_2.GetComponent<Bullet>().SetBulletDamage(1);
                     break;
-                case 3:
-                    GameObject bulletLv_3 = objPool.GetObject("playerBulletsB");
-                    bulletLv_3.transform.position = playerShotPoint;
-                    Rigidbody2D rigidLv_3 = bulletLv_3.GetComponent<Rigidbody2D>();
-                    rigidLv_3.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    bulletLv_3.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
-                    bulletLv_3.GetComponent<Bullet>().SetBulletDamage(3);
+                case 3:     //      \ | /
+                    GameObject bulletLLv_3 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletMLv_3 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletRLv_3 = objPool.GetObject("playerBulletsA");
+                    bulletLLv_3.transform.position = playerShotPoint + Vector3.left * 0.1f;
+                    bulletMLv_3.transform.position = playerShotPoint;
+                    bulletRLv_3.transform.position = playerShotPoint + Vector3.right * 0.1f;
+                    bulletLLv_3.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
+                    bulletRLv_3.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
+                    bulletLLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
+                    bulletMLv_3.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
+                    bulletRLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
+                    break; 
+                    
+                    //GameObject bulletLv_3 = objPool.GetObject("playerBulletsB");
+                    //bulletLv_3.transform.position = playerShotPoint;
+                    //Rigidbody2D rigidLv_3 = bulletLv_3.GetComponent<Rigidbody2D>();
+                    //rigidLv_3.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
+                    //bulletLv_3.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
+                    //bulletLv_3.GetComponent<Bullet>().SetBulletDamage(3);
+                    //break;
+                case 4:     //      \\ || //
+                    GameObject bulletLLv_4_1 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletLLv_4_2 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletMLv_4_1 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletMLv_4_2 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletRLv_4_1 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletRLv_4_2 = objPool.GetObject("playerBulletsA");
+                    bulletLLv_4_1.transform.position = playerShotPoint + Vector3.left * 0.1f;
+                    bulletLLv_4_2.transform.position = playerShotPoint + Vector3.left * 0.2f;
+                    bulletLLv_4_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
+                    bulletLLv_4_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
+                    bulletMLv_4_1.transform.position = playerShotPoint + Vector3.left * 0.1f;
+                    bulletMLv_4_2.transform.position = playerShotPoint + Vector3.right * 0.1f;
+                    bulletRLv_4_1.transform.position = playerShotPoint + Vector3.right * 0.1f;
+                    bulletRLv_4_2.transform.position = playerShotPoint + Vector3.right * 0.2f;
+                    bulletRLv_4_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
+                    bulletRLv_4_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
+                    bulletLLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
+                    bulletLLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
+                    bulletMLv_4_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
+                    bulletMLv_4_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
+                    bulletRLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
+                    bulletRLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
                     break;
-                case 4:
-                    GameObject bulletLv_4 = objPool.GetObject("playerBulletsB");
-                    GameObject bulletLLv_4 = objPool.GetObject("playerBulletsA");
-                    GameObject bulletRLv_4 = objPool.GetObject("playerBulletsA");
-                    bulletLv_4.transform.position = playerShotPoint;
-                    bulletLLv_4.transform.position = playerShotPoint + Vector3.left * 0.15f;
-                    bulletRLv_4.transform.position = playerShotPoint + Vector3.right * 0.15f;
-                    Rigidbody2D rigidLv_4 = bulletLv_4.GetComponent<Rigidbody2D>();
-                    Rigidbody2D rigidLLv_4 = bulletLLv_4.GetComponent<Rigidbody2D>();
-                    Rigidbody2D rigidRLv_4 = bulletRLv_4.GetComponent<Rigidbody2D>();
-                    rigidLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    rigidLLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    rigidRLv_4.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    bulletLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
-                    bulletLLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
-                    bulletRLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
-                    bulletLv_4.GetComponent<Bullet>().SetBulletDamage(3);
-                    bulletLLv_4.GetComponent<Bullet>().SetBulletDamage(1);
-                    bulletRLv_4.GetComponent<Bullet>().SetBulletDamage(1);
+
+                //GameObject bulletLv_4 = objPool.GetObject("playerBulletsB");
+                //GameObject bulletLLv_4 = objPool.GetObject("playerBulletsA");
+                //GameObject bulletRLv_4 = objPool.GetObject("playerBulletsA");
+                //bulletLv_4.transform.position = playerShotPoint;
+                //bulletLLv_4.transform.position = playerShotPoint + Vector3.left * 0.15f;
+                //bulletRLv_4.transform.position = playerShotPoint + Vector3.right * 0.15f;
+                //bulletLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
+                //bulletLLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 3, false);
+                //bulletRLv_4.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
+                //break;
+                case 5:     //      \\ ㅁ //
+                    GameObject bulletLLv_5_1 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletLLv_5_2 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletMLv_5 = objPool.GetObject("playerBulletsB");
+                    GameObject bulletRLv_5_1 = objPool.GetObject("playerBulletsA");
+                    GameObject bulletRLv_5_2 = objPool.GetObject("playerBulletsA");
+                    bulletLLv_5_1.transform.position = playerShotPoint + Vector3.left * 0.1f;
+                    bulletLLv_5_2.transform.position = playerShotPoint + Vector3.left * 0.2f;
+                    bulletMLv_5.transform.position = playerShotPoint;
+                    bulletRLv_5_1.transform.position = playerShotPoint + Vector3.right * 0.1f;
+                    bulletRLv_5_2.transform.position = playerShotPoint + Vector3.right * 0.2f;
+                    bulletLLv_5_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
+                    bulletLLv_5_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * (-0.15f)));
+                    bulletRLv_5_1.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
+                    bulletRLv_5_2.transform.Rotate(Vector3.forward, Mathf.Sin(Mathf.PI * 0.15f));
+                    bulletLLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
+                    bulletLLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)), 1).normalized * 10, 1, false);
+                    bulletMLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 3, false);
+                    bulletRLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
+                    bulletRLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.15f), 1).normalized * 10, 1, false);
+
                     break;
-                case 5:
-                    GameObject bulletLLv_5 = objPool.GetObject("playerBulletsB");
-                    GameObject bulletRLv_5 = objPool.GetObject("playerBulletsB");
-                    bulletLLv_5.transform.position = playerShotPoint + Vector3.left * 0.15f;
-                    bulletRLv_5.transform.position = playerShotPoint + Vector3.right * 0.15f;
-                    Rigidbody2D rigidLLv_5 = bulletLLv_5.GetComponent<Rigidbody2D>();
-                    Rigidbody2D rigidRLv_5 = bulletRLv_5.GetComponent<Rigidbody2D>();
-                    rigidLLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    rigidRLv_5.AddForce(Vector2.up * 10, ForceMode2D.Impulse);
-                    bulletLLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
-                    bulletRLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, false);
-                    bulletLLv_5.GetComponent<Bullet>().SetBulletDamage(3);
-                    bulletRLv_5.GetComponent<Bullet>().SetBulletDamage(3);
-                    break;
+                    //GameObject bulletLLv_5 = objPool.GetObject("playerBulletsB");
+                    //GameObject bulletRLv_5 = objPool.GetObject("playerBulletsB");
+                    //bulletLLv_5.transform.position = playerShotPoint + Vector3.left * 0.15f;
+                    //bulletRLv_5.transform.position = playerShotPoint + Vector3.right * 0.15f;
+                    //bulletLLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 3, false);
+                    //bulletRLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 3, false);
+                    //break;
             }
 
             curShotDelay = 0;
@@ -435,8 +489,7 @@ public class Logics : MonoBehaviour
             AddScore(_score);
             GameObject fx = objPool.GetObject("explosion_" + enemySize);
             fx.transform.position = e.transform.position;
-            aliveEnemies--;
-                    
+            aliveEnemies--;                    
         }
     }
 
@@ -468,6 +521,11 @@ public class Logics : MonoBehaviour
     public void AddScore(int p)
     {
         score += p;
+
+        if (score >= highScore)
+        {
+            highScore = score;
+        }
     }
 
     public void RespawnPlayer()
@@ -527,8 +585,14 @@ public class Logics : MonoBehaviour
     public void GameOver()
     {
         gameOverSet.SetActive(true);
+        Time.timeScale = 0f;
     }
 
+    public void GameClear()
+    {
+        gameClearSet.SetActive(true);
+        Time.timeScale = 0f;
+    }
     public void Retry()
     {
         SceneManager.LoadScene(0);
@@ -544,5 +608,66 @@ public class Logics : MonoBehaviour
         return slowModifyer;
     }
 
+    public void DropItem(Vector3 _position, string _itemName)
+    {
+        if(_itemName == "Speed")
+        {
+            GameObject item = Instantiate(dropItems[0]);
+            item.transform.position = _position;
+        }
+        else if (_itemName == "Power")
+        {
+            GameObject item = Instantiate(dropItems[1]);
+            item.transform.position = _position;
+        }
+    }
 
+
+    public void AddSpeedUp()
+    {
+        ++baseSpeed;
+        maxShotDelay -= 0.125f;
+
+        if (baseSpeed > 8)
+            baseSpeed = 8;
+
+        if (maxShotDelay < 0.1f)
+            maxShotDelay = 0.1f;
+    }
+
+    public void AddPowerUp()
+    {
+        ++BulletPower;
+        if (BulletPower > 5)
+            BulletPower = 5;
+    }
+
+    public bool GetBossAppearState()
+    {
+        return isBossAppear;
+    }
+    void StartBossStage()
+    {
+        Debug.LogWarning("Boss Stage Start!!!");
+        isBossAppear = true;
+        AudioManager.Instance.ChangeBGM(1);
+        GameObject boss = Instantiate(BossObject);
+    }
+
+
+    public void UpdateBossHP(int _curHP)
+    {
+        BossHPBar.GetComponentInChildren<Slider>().value = _curHP;
+
+    }
+    public void SetBossHPUI(int _maxHP)
+    {         
+        BossHPBar.GetComponentInChildren<Slider>().maxValue = _maxHP;
+        BossHPBar.GetComponentInChildren<Slider>().value = _maxHP;
+        BossHPBar.SetActive(true);
+    }
+
+    bool isBossPhase2 = false;
+    public bool GetBossPhase2()    {        return isBossPhase2;    }
+    public void SetBossPhase2()    {        isBossPhase2 = true;    }
 }

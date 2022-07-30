@@ -11,7 +11,6 @@ public class AudioManager : MonoBehaviour
     AudioClip curClip;
     AudioClip nextClip;
 
-    public AudioClip clipBGM_Normal;
 
     public AudioClip clipPlayerAttack;
     
@@ -65,7 +64,33 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    public void ChangeBGM(int _idx)
+    {
+        audSrc.clip = BGMs[_idx];
+        audSrc.volume = 1f;
+        audSrc.loop = true;
+        audSrc.Play();
 
+    }
 
+    public void StopBGM()
+    {
+        StartCoroutine("MuteBgm");
+    }
+
+    IEnumerator MuteBgm()
+    {
+        while(audSrc.volume > 0.05f)
+        {
+            audSrc.volume -= 0.1f;
+
+            yield return new WaitForSeconds(0.15f);
+            if(audSrc.volume <= 0)
+            {
+                audSrc.volume = 0;
+                break;
+            }
+        }
+    }
 
 }

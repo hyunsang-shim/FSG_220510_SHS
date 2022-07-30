@@ -5,26 +5,56 @@ using UnityEngine;
 public class BackgroundScroll : MonoBehaviour
 {
     MeshRenderer render;
-    public float ScrollSpeed;
-    float offset;
+    public float scrollSpeedY;
+    public float scrollSpeedX;
+    float offsetX, offsetY;
+    public Texture BossBG;
+    public Texture BossBGPhase2;
+    bool changedToBossStageBG = false;
 
     private void Start()
     {
         render = GetComponent<MeshRenderer>();
-        offset = 0;
+        offsetX = 0;
+        offsetY = 0;
+
     }
     private void Update()
     {
         if (!Logics.Instance.GetSlowState())
         {
-            offset += ScrollSpeed * Time.deltaTime;
+            offsetY += scrollSpeedY * Time.deltaTime;
+            offsetX += scrollSpeedX * Time.deltaTime;
         }
         else
         {
-            offset += ScrollSpeed * Time.deltaTime * 0.2f;
+            offsetY += scrollSpeedY * Time.deltaTime * 0.2f;
+            offsetX += scrollSpeedX * Time.deltaTime * 0.2f;
         }
 
 
-        render.material.mainTextureOffset = new Vector2(0, offset);
+        render.material.mainTextureOffset = new Vector2(offsetX, offsetY);
+    }
+
+    private void FixedUpdate()
+    {
+        if (Logics.Instance.GetBossAppearState() && !changedToBossStageBG)
+        {
+            render.material.mainTexture = BossBG;
+            render.material.mainTextureScale = new Vector2(12,20);
+            changedToBossStageBG = true;
+            scrollSpeedX = 5;
+            scrollSpeedY = -scrollSpeedX;
+        }
+
+        if(Logics.Instance.GetBossPhase2())
+        {
+            render.material.mainTexture = BossBGPhase2;
+            render.material.mainTextureScale = new Vector2(12, 20);
+            changedToBossStageBG = true;
+            scrollSpeedX = -7;
+            scrollSpeedY = -scrollSpeedX;
+
+        }
     }
 }
