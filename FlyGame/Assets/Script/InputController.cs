@@ -80,11 +80,11 @@ public class InputController : MonoBehaviour
         Logics.Instance.SetPlayerMovement(movementH, movementV);
 
         // 감속모드 조절
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetMouseButton(1))
         {
             Logics.Instance.SetSlowState(true);
         }
-        else if (Input.GetKeyUp(KeyCode.LeftShift))
+        else if (Input.GetKeyUp(KeyCode.LeftShift) || Input.GetMouseButtonUp(1))
         {
             Logics.Instance.SetSlowState(false);
         }

@@ -53,8 +53,11 @@ public class Logics : MonoBehaviour
     [Header("UI 구성 요소")]
     public Text scoreText;
     public Text highScoreText;
+    public Text scoreTextOnGameOver;
+    public Text highScoreTextOnGameOver;
     public Sprite lifeImage;
     public GameObject BossHPBar;
+    public GameObject CommonUISet;
 
     [Header("UI Prefabs")]
     public GameObject gameOverSet;
@@ -90,25 +93,15 @@ public class Logics : MonoBehaviour
 
 
         spawnList = new List<Spawner>();
-        playerShotPoint = player.transform.position + Vector3.up * 0.5f;
-        BulletPower = 1;
+
 
         UIRoot = FindObjectOfType<Canvas>();
 
-        for(int i = 0; i < life; i++)
-        {
-            GameObject l = new GameObject();
-            l.AddComponent<Image>();
-            l.GetComponent<Image>().sprite = lifeImage;
-            l.transform.SetParent(lifeIconsRoot.transform);
-            l.name = $"life_{i}";
-        }
-        BossHPBar.gameObject.SetActive(false);
-        Debug.Log($"BossHPBar is {BossHPBar.activeSelf}");
-        highScore = PlayerPrefs.GetInt("highScore", 5000);
-        highScoreText.text = $"HighScore: {highScore}";
+        SetCommonUI();
         ReadSpawnData();
         ReadEnemyMovePatterns();
+
+        Invoke("StartBossStage", 5);
     }
 
     private void Update()
@@ -134,7 +127,11 @@ public class Logics : MonoBehaviour
             curSpawnDelay = 0;
             spawnIndex = 0;
             spawnEnd = false;
+        }
 
+        if(Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            GameClear();
         }
 #endif
 
@@ -149,6 +146,7 @@ public class Logics : MonoBehaviour
         Fire();
         Reload();
         UpdatePlayerShotPoint();
+        
 
         curSpawnDelay += Time.fixedDeltaTime;
 
@@ -157,7 +155,7 @@ public class Logics : MonoBehaviour
 
         if ((curSpawnDelay > nextSpawnDelay) && !spawnEnd)
         {
-            SpawnEnemy();
+            //SpawnEnemy();
             curSpawnDelay = 0;
         }
 
@@ -585,20 +583,95 @@ public class Logics : MonoBehaviour
 
     public void GameOver()
     {
+        CheckHighScore();
+        CommonUISet.SetActive(false);
         gameOverSet.SetActive(true);
         Time.timeScale = 0f;
+
     }
 
     public void GameClear()
     {
+
+        CheckHighScore();
+        CommonUISet.SetActive(false);
+        highScoreTextOnGameOver.text = $"HighScore: {highScore}";
+        scoreTextOnGameOver.text = $"Your Score: {score}";
         gameClearSet.SetActive(true);
         Time.timeScale = 0f;
+        
+
     }
     public void Retry()
     {
+        CheckHighScore();
+        Time.timeScale = 1.0f;
         SceneManager.LoadScene(0);
+        SetCommonUI();
     }
-    
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
+    public void OnApplicationQuit()
+    {
+        CheckHighScore();
+    }
+
+    void SetCommonUI()
+    {
+        life = 5;
+        playerShotPoint = player.transform.position + Vector3.up * 0.5f;
+        BulletPower = 1;
+
+        for (int i = 0; i < life; i++)
+        {
+            GameObject l = new GameObject();
+            l.AddComponent<Image>();
+            l.GetComponent<Image>().sprite = lifeImage;
+            l.transform.SetParent(lifeIconsRoot.transform);
+            l.name = $"life_{i}";
+        }
+
+        BossHPBar.gameObject.SetActive(false);
+
+
+        StreamReader stringReader = new StreamReader(getPath());
+
+        string line = stringReader.ReadLine();
+        Debug.Log(line);
+        highScore = int.Parse(line);
+        highScoreText.text = $"HighScore: {highScore}";
+
+        CommonUISet.SetActive(true);
+    }
+    void CheckHighScore()
+    {
+        string filePath = getPath();
+        Debug.Log(filePath);
+        StreamWriter wr = File.CreateText(filePath);
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+        if (highScore < score)
+        {
+            highScore = score;
+        }
+
+
+        sb.AppendLine(highScore.ToString());
+        wr.WriteLine(sb);
+        wr.Close();
+    }
+    private string getPath()
+    {
+#if UNITY_EDITOR
+        return Application.dataPath + "/Resources/" + "HighScore.csv";
+#else
+        return Application.dataPath +"/"+"HighScore.csv";
+#endif
+    }
+
     public float GetSlowModifier()
     {
         return slowModifyer;
@@ -621,14 +694,14 @@ public class Logics : MonoBehaviour
 
     public void AddSpeedUp()
     {
-        ++baseSpeed;
-        maxShotDelay -= 0.125f;
+        baseSpeed += 0.125f;
+        maxShotDelay -= 0.075f;
 
         if (baseSpeed > 8)
             baseSpeed = 8;
 
-        if (maxShotDelay < 0.1f)
-            maxShotDelay = 0.1f;
+        if (maxShotDelay < 0.12f)
+            maxShotDelay = 0.12f;
     }
 
     public void AddPowerUp()
