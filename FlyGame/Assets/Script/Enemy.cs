@@ -10,9 +10,11 @@ public class Enemy : MonoBehaviour
     bool valunable;
     public int score;
     public GameObject DieFx;
+    Collider2D col;
     int movePatternID;
     int positionID = 1;
-    float curShotDelay, maxShotDelay;
+    float maxShotDelay;
+    float curDelay;
     bool shotOpen = false;
     public Slider hpbar;
 
@@ -24,7 +26,6 @@ public class Enemy : MonoBehaviour
     string MyShotType;
     List<Transform> MovePoints = new List<Transform>();
     Vector3 curPos, nextPos;
-    Vector3 hpbarOffset;
     string dropType;
 
     private void Awake()
@@ -35,8 +36,7 @@ public class Enemy : MonoBehaviour
         curPos = nextPos = transform.position;
         hpbar = GetComponentInChildren<Slider>();
         hpbar.maxValue = HP;
-        hpbarOffset = new Vector3(0, -0.5f, 0);
-        
+        col = GetComponent<Collider2D>();        
     }
 
     private void Start()
@@ -55,23 +55,28 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        FireBullet();
-        Reload();
+        if(valunable)
+            FireBullet();
 
         //hpbar.transform.parent.position = transform.position + hpbarOffset;
     }
     private void OnEnable()
     {
         Invoke("SetValunable", 2);
+        curDelay = 0;
+
     }
 
     void SetValunable()
     {
         valunable = true;
+        InvokeRepeating("FireBullet", maxShotDelay, maxShotDelay);
     }
     private void FixedUpdate()
     {
         MoveEnemy();
+        curDelay += Time.fixedDeltaTime;
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -123,7 +128,6 @@ public class Enemy : MonoBehaviour
         positionID = 1;
         dropType = _dropType;
 
-        curShotDelay  = 0;
         maxShotDelay = _shotDelay;
 
         hpbar.maxValue = HP;
@@ -131,16 +135,17 @@ public class Enemy : MonoBehaviour
 
         shotOpen = false;
 
-        InvokeRepeating("FireBullet", 2, maxShotDelay);
+        InvokeRepeating("FireBullet", maxShotDelay, maxShotDelay);
 
     }
 
     public void FireBullet()
     {
 
-        if (!shotOpen || curShotDelay < maxShotDelay) return;
-
         Vector2 targetPos = Logics.Instance.player.transform.position;
+
+        if (curDelay < maxShotDelay) return;
+
 
         switch (MyShotType)
         {
@@ -209,14 +214,9 @@ public class Enemy : MonoBehaviour
                 }
         }
 
-            curShotDelay = 0;
+        curDelay = 0;
     }
 
-    public void Reload()
-    {
-        if (maxShotDelay != 9999 || shotOpen)
-            curShotDelay += Time.fixedDeltaTime;
-    }
 
     private void MoveEnemy()
     {
@@ -233,6 +233,7 @@ public class Enemy : MonoBehaviour
         {
             Logics.Instance.EnemyDead(gameObject, isDead, score);
             isDead = true;
+            valunable = false;
         }
         else if (HP > 0)
         {
@@ -243,6 +244,7 @@ public class Enemy : MonoBehaviour
 
         if (isDead)
         {
+            valunable = false;
             if (dropType != "None")
             {
                 Logics.Instance.DropItem(transform.position, dropType);

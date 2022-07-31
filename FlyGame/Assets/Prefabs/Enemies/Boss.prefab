@@ -165,9 +165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b0f3674077fe234eaa2d02719c9f50e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveDelay: 3
   dieFx:
   - {fileID: 5156775181663589347, guid: 676880819374758439439636bf379d32, type: 3}
   - {fileID: 6088837143376474335, guid: aa5c940a676add6469b1c082b45fe5cd, type: 3}
   patternIdx: 0
   curPatternCount: 0
-  maxPatternCount: 0100000005000000030000000300000003000000
+  maxPatternCount: 01000000050000000800000005000000

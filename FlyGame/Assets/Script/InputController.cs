@@ -25,16 +25,15 @@ public class InputController : MonoBehaviour
     private void Update()
     {
         Move();
+
+        // 이동 관련 입력을 받는다.
+        movementH = Input.GetAxisRaw("Horizontal");
+        movementV = Input.GetAxisRaw("Vertical");
     }
 
     private void Move() {
         direction = 0;  // 방향값 초기화
         speedFlag = Logics.Instance.GetSlowState(); // 슬로우 상태 갱신
-
-
-        // 이동 관련 입력을 받는다.
-        movementH = Input.GetAxisRaw("Horizontal");
-        movementV = Input.GetAxisRaw("Vertical");
 
 
         /// 방향값

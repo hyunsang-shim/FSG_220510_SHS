@@ -59,14 +59,14 @@ public class ObjPool : MonoBehaviour
         enemyMedium = new GameObject[10];
         enemyLarge = new GameObject[5];
 
-        playerBulletsA = new GameObject[150];
-        playerBulletsB = new GameObject[150];
-        enemyBulletsA = new GameObject[50];
-        enemyBulletsB = new GameObject[50];
-        bossBulletsA = new GameObject[80];
-        bossBulletsB = new GameObject[80];
-        bossBulletsC = new GameObject[80];
-        bossBulletsD = new GameObject[80];
+        playerBulletsA = new GameObject[250];
+        playerBulletsB = new GameObject[250];
+        enemyBulletsA = new GameObject[70];
+        enemyBulletsB = new GameObject[70];
+        bossBulletsA = new GameObject[200];
+        bossBulletsB = new GameObject[200];
+        bossBulletsC = new GameObject[200];
+        bossBulletsD = new GameObject[200];
 
         powerUps_NormalPower = new GameObject[5];
         powerUps_FullPower = new GameObject[5];
