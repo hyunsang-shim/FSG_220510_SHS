@@ -142,7 +142,10 @@ public class Logics : MonoBehaviour
             spawnEnd = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha0))
+        if (Input.GetKeyDown(KeyCode.B))
+            StartBossStage();
+
+            if (Input.GetKeyDown(KeyCode.Alpha0))
         {
             GameClear();
         }
@@ -829,6 +832,8 @@ public class Logics : MonoBehaviour
             GameObject boss = Instantiate(BossObject);
             boss.name = "Boss";
         }
+
+        objPool.ClearEnemyBullets();
     }
 
 

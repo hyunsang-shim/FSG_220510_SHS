@@ -5,7 +5,6 @@ using UnityEngine;
 public class itemSpeedUp : MonoBehaviour
 {
     Collider2D col;
-
     private void Awake()
     {
         col = GetComponent<Collider2D>();
@@ -16,6 +15,7 @@ public class itemSpeedUp : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             Logics.Instance.AddSpeedUp();
+            AudioManager.Instance.PlaySFX("SpeedUp");
             Destroy(gameObject);
         }
 

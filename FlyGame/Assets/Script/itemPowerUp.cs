@@ -5,10 +5,12 @@ using UnityEngine;
 public class itemPowerUp : MonoBehaviour
 {
     Collider2D col;
+    AudioSource aud;
 
     private void Awake()
     {
         col = GetComponent<Collider2D>();
+        aud = GetComponent<AudioSource>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -16,6 +18,7 @@ public class itemPowerUp : MonoBehaviour
         if(collision.CompareTag("Player"))
         {
             Logics.Instance.AddPowerUp();
+            AudioManager.Instance.PlaySFX("PowerUp");
             Destroy(gameObject);
         }
 

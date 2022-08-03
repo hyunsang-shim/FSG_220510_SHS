@@ -262,4 +262,21 @@ public class ObjPool : MonoBehaviour
         Debug.Log($"Out of Pool!! Expand pool size of {targetPool.ToString()}");
         return null;
     }
+
+    public void ClearEnemyBullets()
+    {
+        foreach(GameObject o in enemyBulletsA)
+        {
+            if (o.activeSelf)
+                o.SetActive(false);
+        }
+
+        foreach (GameObject o in enemyBulletsB)
+        {
+            if (o.activeSelf)
+                o.SetActive(false);
+        }
+
+
+    }
 }

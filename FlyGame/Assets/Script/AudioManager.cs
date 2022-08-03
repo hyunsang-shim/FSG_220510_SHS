@@ -17,6 +17,8 @@ public class AudioManager : MonoBehaviour
     public AudioClip clipPlayerDeath;
     public AudioClip clipEnemySmallDeath;
     public AudioClip clipEnemyMediumDeath;
+    public AudioClip clipPowerUp;
+    public AudioClip clipSpeedUp;
 
     private static AudioManager instance = null;
     public static AudioManager Instance
@@ -60,6 +62,12 @@ public class AudioManager : MonoBehaviour
                 break;
             case "PLAYER_ATTACK":
                 audSrc.PlayOneShot(clipPlayerAttack);
+                break;
+            case "PowerUp":
+                audSrc.PlayOneShot(clipPowerUp);
+                break;
+            case "SpeedUp":
+                audSrc.PlayOneShot(clipSpeedUp);
                 break;
         }
     }

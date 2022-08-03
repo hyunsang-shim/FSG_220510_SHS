@@ -5,8 +5,8 @@ using UnityEngine;
 public class EnemyBoss : MonoBehaviour
 {
     float speed = 4;
-    int HP = 500;
-    int curHP= 500;
+    int HP = 100;
+    int curHP;
     float coolTime = 3f;
     float shotDelay = 0.5f;
     public float moveDelay = 3;
@@ -14,7 +14,7 @@ public class EnemyBoss : MonoBehaviour
     Vector2 BottomRight = new Vector2(5, -6);
 
     int score = 5000;
-    public GameObject[] dieFx;
+    public GameObject dieFx;
     bool isDead = false;
     Rigidbody2D rig;
     Collider2D col;
@@ -27,11 +27,17 @@ public class EnemyBoss : MonoBehaviour
     public int curPatternCount;
     public int[] maxPatternCount;
 
+    // ªÁ∏¡ ¿Ã∫•∆Æ
+    AudioSource aud;
+    public AudioClip explosionBoss;
+    public AudioClip[] explosionSounds;
+
     private void Awake()
     {
         anim = GetComponent<Animator>();
         spr = GetComponent<SpriteRenderer>();
         curHP = HP;
+        aud = GetComponent<AudioSource>();
 
     }
 
@@ -47,34 +53,44 @@ public class EnemyBoss : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
+
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            HP = 0;
+
+        }
+#endif
     }
 
     void Move()
     {
-        float h = Mathf.Abs(curPos.x - nextPos.x);
-        float v = Mathf.Abs(curPos.y - nextPos.y);
-        float movespeed;
-        if (h > v)
-            movespeed = speed + h / 2f;
-        else
-            movespeed = speed + v / 2f;
+        if (!isDead)
+        {
+            float h = Mathf.Abs(curPos.x - nextPos.x);
+            float v = Mathf.Abs(curPos.y - nextPos.y);
+            float movespeed;
+            if (h > v)
+                movespeed = speed + h / 2f;
+            else
+                movespeed = speed + v / 2f;
 
-        transform.position = Vector2.MoveTowards(curPos, nextPos, movespeed * Time.fixedDeltaTime);
-        curPos = transform.position;
+            transform.position = Vector2.MoveTowards(curPos, nextPos, movespeed * Time.fixedDeltaTime);
+            curPos = transform.position;
 
-        if (curPos == nextPos) Invoke("SelectNextMovePosition", moveDelay);
+            if (curPos == nextPos) Invoke("SelectNextMovePosition", moveDelay);
 
-        if (curPos.x > nextPos.x) anim.SetInteger("Direction", -1);
-        else if (curPos.x < nextPos.x) anim.SetInteger("Direction", 1);
-        else anim.SetInteger("Direction", 0);
-
+            if (curPos.x > nextPos.x) anim.SetInteger("Direction", -1);
+            else if (curPos.x < nextPos.x) anim.SetInteger("Direction", 1);
+            else anim.SetInteger("Direction", 0);
+        }
     }
 
     void SelectNextMovePosition()
     {
         int cnt = 0;
         while (Mathf.Abs(nextPos.x - curPos.x) < 2 && Mathf.Abs(nextPos.y - curPos.y) < 2)
-        { 
+        {
             nextPos = new Vector2(
                    Random.Range(TopLeft.x, BottomRight.x),
                    Random.Range(TopLeft.y, BottomRight.y)
@@ -98,7 +114,7 @@ public class EnemyBoss : MonoBehaviour
     {
         curHP -= _dmg;
         Logics.Instance.UpdateBossHP(curHP);
-        if(curHP <= HP/2 && !Logics.Instance.GetBossPhase2())
+        if (curHP <= HP / 2 && !Logics.Instance.GetBossPhase2())
         {
             Logics.Instance.SetBossPhase2();
             SetBossPhase2();
@@ -124,28 +140,33 @@ public class EnemyBoss : MonoBehaviour
 
     void SelectPattern()
     {
-        patternIdx = patternIdx == 3 ? 1 : patternIdx + 1;
-        curPatternCount = 0;
-
-        switch (patternIdx)
+        if (!isDead)
         {
-            case 1:
-                FireForward();
-                break;
-            case 2:
-                FireShotgun();
-                break;
-            case 3:
-                {
-                    if (!Logics.Instance.GetBossPhase2())
+            patternIdx = patternIdx == 3 ? 1 : patternIdx + 1;
+            curPatternCount = 0;
+
+            switch (patternIdx)
+            {
+                case 1:
+                    FireForward();
+                    break;
+                case 2:
+                    FireShotgun();
+                    break;
+                case 3:
                     {
-                        SelectPattern();
+                        if (!Logics.Instance.GetBossPhase2())
+                        {
+                            SelectPattern();
+                        }
+                        else
+                            FireRound();
                     }
-                    else
-                        FireRound();
-                }
-                break;
+                    break;
+            }
         }
+        else
+            anim.StopPlayback();
     }
 
     void FireForward()
@@ -177,7 +198,8 @@ public class EnemyBoss : MonoBehaviour
             Invoke("SelectPattern", coolTime);
 
     }
-    void FireShotgun() {
+    void FireShotgun()
+    {
 
         curPatternCount++;
 
@@ -222,8 +244,9 @@ public class EnemyBoss : MonoBehaviour
         else
             Invoke("SelectPattern", coolTime);
     }
-    void FireRound() {        
-        
+    void FireRound()
+    {
+
         for (int i = 0; i < 6; i++)
         {
             GameObject bullet = Logics.Instance.objPool.GetObject("bossBulletsD");
@@ -245,13 +268,16 @@ public class EnemyBoss : MonoBehaviour
     void Die()
     {
         Logics.Instance.AddScore(score);
-        Logics.Instance.GameClear();
+        GameObject fx = Instantiate(dieFx);
+        fx.transform.SetParent(gameObject.transform);
+        fx.name = "dieFx";
+        StartCoroutine("DieSoundPlay");
     }
 
     public void SetBossPhase2()
     {
         AudioManager.Instance.ChangeBGM(2);
-        coolTime = coolTime* 0.75f;
+        coolTime = coolTime * 0.75f;
         speed = speed * 1.35f;
         shotDelay = shotDelay * 0.4f;
 
@@ -262,5 +288,22 @@ public class EnemyBoss : MonoBehaviour
 
 
     }
-   
+
+    IEnumerable DieSoundPlay()
+    {
+        int flip = 0;
+        int cnt = 0;
+        while (true)
+        {
+
+            aud.PlayOneShot(explosionSounds[flip == 0 ? 1 : 0]);
+            cnt++;
+            yield return new WaitForSeconds(0.8f);
+            if (cnt > 5)
+                break;
+        }
+
+        Logics.Instance.GameClear();
+        Destroy(gameObject);
+    }
 }
