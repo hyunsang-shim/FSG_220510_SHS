@@ -1753,7 +1753,7 @@ MonoBehaviour:
   SecondBonusLifeScore: 25000
   defaultEnemyHP_Small: 1
   defaultEnemyHP_Medium: 8
-  defaultEnemyHP_Boss: 100
+  defaultEnemyHP_Boss: 5000
   aliveEnemies: 0
   forceSpawnDelay: 1
   curSpawnDelay: 0
