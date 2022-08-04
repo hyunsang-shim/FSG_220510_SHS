@@ -18,8 +18,7 @@ public class InputController : MonoBehaviour
 
     private void Start()
     {
-        speed = Logics.Instance.GetSpeed();
-        slowSpeed = Logics.Instance.GetSlowedSpeed();
+        speed = Logics.Instance.GetPlayerSpeed();
     }
 
     private void Update()

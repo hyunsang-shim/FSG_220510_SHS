@@ -205,7 +205,7 @@ public class ObjPool : MonoBehaviour
             case "enemyMedium":
                 targetPool = enemyMedium;
                 break;
-            case "enemyLarge":
+            case "boss":
                 targetPool = enemyLarge;
                 break;
             case "playerBulletsA":
@@ -258,25 +258,16 @@ public class ObjPool : MonoBehaviour
             }
         }
 
-
-        Debug.Log($"Out of Pool!! Expand pool size of {targetPool.ToString()}");
         return null;
     }
 
-    public void ClearEnemyBullets()
+    public GameObject[] GetEnemyBulletsA()
     {
-        foreach(GameObject o in enemyBulletsA)
-        {
-            if (o.activeSelf)
-                o.SetActive(false);
-        }
+        return enemyBulletsA;
+    }
 
-        foreach (GameObject o in enemyBulletsB)
-        {
-            if (o.activeSelf)
-                o.SetActive(false);
-        }
-
-
+    public GameObject[] GetEnemyBulletsB()
+    {
+        return enemyBulletsB;
     }
 }

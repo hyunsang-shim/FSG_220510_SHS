@@ -5,9 +5,13 @@ using UnityEngine;
 public class itemSpeedUp : MonoBehaviour
 {
     Collider2D col;
+    float normalDropSpeed, slowedDropSpeed;
+    Vector3 curPos;
     private void Awake()
     {
         col = GetComponent<Collider2D>();
+        normalDropSpeed = 6;
+        slowedDropSpeed = normalDropSpeed / Logics.Instance.GetSlowedSpeed();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -16,10 +20,25 @@ public class itemSpeedUp : MonoBehaviour
         {
             Logics.Instance.AddSpeedUp();
             AudioManager.Instance.PlaySFX("SpeedUp");
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
 
         if (collision.CompareTag("BulletKiller"))
-            Destroy(gameObject);
+            gameObject.SetActive(false);
     }
+
+    private void FixedUpdate()
+    {
+        curPos = transform.position;
+        Vector3 nextPos = new Vector3(curPos.x, -20, curPos.z);
+        if (!Logics.Instance.GetSlowState())
+        {
+
+            transform.position = Vector3.MoveTowards(transform.position, nextPos, normalDropSpeed * Time.fixedDeltaTime);
+        }
+        else
+            transform.position = Vector3.MoveTowards(transform.position, nextPos, slowedDropSpeed * Time.fixedDeltaTime);
+
+    }
+
 }

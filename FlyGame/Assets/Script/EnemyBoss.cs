@@ -46,6 +46,7 @@ public class EnemyBoss : MonoBehaviour
 
         curPos = transform.position;
         nextPos = new Vector2(0, 5);
+        curHP = HP = Logics.Instance.GetEnemyHP("Boss");
         Logics.Instance.SetBossHPUI(HP);
         Invoke("SelectPattern", coolTime);
     }
@@ -74,8 +75,10 @@ public class EnemyBoss : MonoBehaviour
                 movespeed = speed + h / 2f;
             else
                 movespeed = speed + v / 2f;
-
-            transform.position = Vector2.MoveTowards(curPos, nextPos, movespeed * Time.fixedDeltaTime);
+            if(!Logics.Instance.GetSlowState())
+                transform.position = Vector2.MoveTowards(curPos, nextPos, movespeed * Time.fixedDeltaTime);
+            else
+                transform.position = Vector2.MoveTowards(curPos, nextPos, Logics.Instance.GetSlowedSpeed() * 0.5f * Time.fixedDeltaTime);
             curPos = transform.position;
 
             if (curPos == nextPos) Invoke("SelectNextMovePosition", moveDelay);
@@ -105,8 +108,11 @@ public class EnemyBoss : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("PlayerBullet"))
         {
-            Hit(collision.gameObject.GetComponent<Bullet>().GetBulletDamage());
-            collision.gameObject.SetActive(false);
+            if (!isDead)
+            {
+                Hit(collision.gameObject.GetComponent<Bullet>().GetBulletDamage());
+                collision.gameObject.SetActive(false);
+            }
         }
     }
 
@@ -184,19 +190,40 @@ public class EnemyBoss : MonoBehaviour
         bulletRR.transform.position = transform.position + Vector3.left * 0.4f;
 
         Vector2 BulletSpeed = (targetPos - (Vector2)transform.position).normalized * (speed * 2f);
-        bulletLL.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false);
-        bulletL.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false);
-        bulletR.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false);
-        bulletRR.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false);
+        bulletLL.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false, true);
+        bulletL.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false, true);
+        bulletR.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false, true);
+        bulletRR.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false, true);
 
 
         curPatternCount++;
 
-        if (curPatternCount < (Logics.Instance.GetBossPhase2() ? maxPatternCount[patternIdx] * 2 : maxPatternCount[patternIdx]))
-            Invoke("FireForward", shotDelay);
-        else
-            Invoke("SelectPattern", coolTime);
-
+        if (!Logics.Instance.GetLogicTimeFlag())
+        {
+            if (curPatternCount < (Logics.Instance.GetBossPhase2() ? maxPatternCount[patternIdx] * 2 : maxPatternCount[patternIdx]))
+            {
+                if (!isDead)
+                {
+                    if (!Logics.Instance.GetSlowState())
+                    {
+                        Invoke("FireForward", shotDelay);
+                    }
+                    else
+                        Invoke("FireForward", shotDelay + Logics.Instance.GetSlowedSpeed());
+                }
+                else
+                {
+                    if (!Logics.Instance.GetSlowState())
+                    {
+                        SelectPattern();
+                    }
+                    else
+                        Invoke("SelectPattern", Logics.Instance.GetSlowedSpeed());
+                }
+            }
+            else
+                Invoke("SelectPattern", coolTime);
+        }
     }
     void FireShotgun()
     {
@@ -208,45 +235,66 @@ public class EnemyBoss : MonoBehaviour
             Vector2 targetPos = Logics.Instance.player.transform.position;
 
             GameObject bullet1, bullet2, bullet3;
+            bullet1 = Logics.Instance.objPool.GetObject("bossBulletsB"); 
+            bullet2 = Logics.Instance.objPool.GetObject("bossBulletsB");
+            bullet3 = Logics.Instance.objPool.GetObject("bossBulletsB");
+
             Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * speed;
-            bullet1 = Logics.Instance.objPool.GetObject("bossBulletsB");
             if (bullet1 != null)
             {
                 bullet1.transform.position = transform.position;
-                bullet1.GetComponent<Bullet>().SetBullet(dirVec1.normalized * speed, 1, true);
-                Rigidbody2D rig1 = bullet1.GetComponent<Rigidbody2D>();
+                bullet1.GetComponent<Bullet>().SetBullet(dirVec1.normalized * speed, 1, true, true);
             }
 
             Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * speed;
-            bullet2 = Logics.Instance.objPool.GetObject("bossBulletsB");
 
             if (bullet2 != null)
             {
                 bullet2.transform.position = transform.position;
                 dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.15f) + dirVec2.x, -1).normalized * speed;
-                bullet2.GetComponent<Bullet>().SetBullet(dirVec2.normalized * speed, 1, true);
-                Rigidbody2D rig2 = bullet2.GetComponent<Rigidbody2D>();
+                bullet2.GetComponent<Bullet>().SetBullet(dirVec2.normalized * speed, 1, true, true);
             }
 
             Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * speed;
-            bullet3 = Logics.Instance.objPool.GetObject("bossBulletsB");
             if (bullet3 != null)
             {
                 bullet3.transform.position = transform.position;
                 dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)) + dirVec3.x, -1).normalized * speed;
-                bullet3.GetComponent<Bullet>().SetBullet(dirVec3.normalized * speed, 1, true);
-                Rigidbody2D rig3 = bullet3.GetComponent<Rigidbody2D>();
+                bullet3.GetComponent<Bullet>().SetBullet(dirVec3.normalized * speed, 1, true, true);
             }
         }
 
-        if (curPatternCount < (Logics.Instance.GetBossPhase2() ? maxPatternCount[patternIdx] * 2 : maxPatternCount[patternIdx]))
-            Invoke("FireShotgun", shotDelay);
-        else
-            Invoke("SelectPattern", coolTime);
-    }
+        if (!Logics.Instance.GetLogicTimeFlag())
+        {
+            if (curPatternCount < (Logics.Instance.GetBossPhase2() ? maxPatternCount[patternIdx] * 2 : maxPatternCount[patternIdx]))
+            {
+                if (!isDead)
+                {
+                    if (!Logics.Instance.GetSlowState())
+                    {
+                        Invoke("FireShotgun", shotDelay);
+                    }
+                    else
+                        Invoke("FireShotgun", shotDelay + Logics.Instance.GetSlowedSpeed());
+                }
+                else
+                {
+                    if (!Logics.Instance.GetSlowState())
+                    {
+                        SelectPattern();
+                    }
+                    else
+                        Invoke("SelectPattern", Logics.Instance.GetSlowedSpeed());
+                }
+            }
+            else
+                Invoke("SelectPattern", coolTime);
+        }
+
+}
     void FireRound()
     {
-
+        
         for (int i = 0; i < 6; i++)
         {
             GameObject bullet = Logics.Instance.objPool.GetObject("bossBulletsD");
@@ -260,18 +308,44 @@ public class EnemyBoss : MonoBehaviour
 
         curPatternCount++;
 
-        if (curPatternCount < (Logics.Instance.GetBossPhase2() ? maxPatternCount[patternIdx] * 2 : maxPatternCount[patternIdx]))
-            Invoke("FireRound", shotDelay);
-        else
-            Invoke("SelectPattern", coolTime);
+        if (!Logics.Instance.GetLogicTimeFlag())
+        {
+            if (curPatternCount < (Logics.Instance.GetBossPhase2() ? maxPatternCount[patternIdx] * 2 : maxPatternCount[patternIdx]))
+            {
+                if (!isDead)
+                {
+                    if (!Logics.Instance.GetSlowState())
+                    {
+                        Invoke("FireRound", shotDelay);
+                    }
+                    else
+                        Invoke("FireRound", shotDelay + Logics.Instance.GetSlowedSpeed());
+                }
+                else
+                {
+                    if (!Logics.Instance.GetSlowState())
+                    {
+                        SelectPattern();
+                    }
+                    else
+                        Invoke("SelectPattern", Logics.Instance.GetSlowedSpeed());
+                }
+            }
+            else
+                Invoke("SelectPattern", coolTime);
+        }
     }
     void Die()
     {
+        isDead = true;        
         Logics.Instance.AddScore(score);
         GameObject fx = Instantiate(dieFx);
-        fx.transform.SetParent(gameObject.transform);
+        fx.transform.SetParent(transform);
         fx.name = "dieFx";
         StartCoroutine("DieSoundPlay");
+        AudioManager.Instance.PlaySFX(explosionBoss);
+        Logics.Instance.ClearAllEnemyBullets();
+        Logics.Instance.StopLogicTime();
     }
 
     public void SetBossPhase2()
@@ -289,21 +363,32 @@ public class EnemyBoss : MonoBehaviour
 
     }
 
-    IEnumerable DieSoundPlay()
+    IEnumerator DieSoundPlay()
     {
         int flip = 0;
         int cnt = 0;
-        while (true)
+        while (cnt < 5)
         {
-
             aud.PlayOneShot(explosionSounds[flip == 0 ? 1 : 0]);
             cnt++;
-            yield return new WaitForSeconds(0.8f);
-            if (cnt > 5)
-                break;
+            
+            yield return new WaitForSecondsRealtime(0.8f);
+
+            if(cnt == 3)
+            {
+                GameObject fx2 = Instantiate(dieFx);
+                fx2.transform.SetParent(transform);
+                fx2.name = "dieFx2";
+            }
         }
 
+
+        GameObject fx3 = Instantiate(dieFx);
+        fx3.transform.SetParent(transform);
+        fx3.name = "dieFx3";
+
         Logics.Instance.GameClear();
-        Destroy(gameObject);
+        Debug.Log("Game Clear!");
+        gameObject.SetActive(false);
     }
 }

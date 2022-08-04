@@ -11,8 +11,8 @@ public class Logics : MonoBehaviour
     List<Spawner> spawnList;
     int spawnIndex;
     bool spawnEnd;
+    bool isStopLogictime = false;
 
-    
     int direction;
 
     [Header("필수 객체")]
@@ -22,17 +22,21 @@ public class Logics : MonoBehaviour
     public Transform[] enemyMovePoints;
     Vector3 playerShotPoint;
     public GameObject[] dropItems;
-    public GameObject BossObject;
 
     // 밸런스 요소들
     [Header("플레이어 밸런스 요소")]
     public int life;
     public int powerLevel;
     public int BulletPower;        
-    public float maxShotDelay;  // 설정된 총알 발사 딜레이
+    public float maxShotDelay;  // 설정된 최소한의 총알 발사 딜레이
+    float shotDelay;             // 현재 총알 발사 딜레이
     public float baseSpeed;   // 기본 기체 이동 속도    
     bool isBossAppear = false;
     int highScore;
+    public int firstBonusLifeScore = 50000;
+    public int SecondBonusLifeScore = 100000;
+    bool gotFirstLifeBonus;
+    bool gotSecondLifeBonus;
 
     [Header("밸런스 요소 (디버그용)")]
     public int defaultEnemyHP_Small;
@@ -73,7 +77,7 @@ public class Logics : MonoBehaviour
     List<List<int>> movePattern = new List<List<int>>();
     
 
-    float slowModifyer = 0.5f;      // 느려졌을 때 얼마나 느려질 것인지.
+    float slowedSpeed = 2.5f;      // 느려졌을 때 얼마나 느려질 것인지.
     bool isSlowed = false;          // 느려진 상태인지 확인
     float totalSpeed;
     float curShotDelay;     // 총알 발사 딜레이 체크용
@@ -98,13 +102,12 @@ public class Logics : MonoBehaviour
 
         UIRoot = FindObjectOfType<Canvas>();
 
+        shotDelay = 0.7f;
+        maxShotDelay = 0.35f;
         SetCommonUI();
         ReadSpawnData();
         ReadEnemyMovePatterns();
 
-        //보스전 테스트용
-        //Invoke("StartBossStage", 3);
-        //spawnEnd = true;
     }
 
     private void Update()
@@ -129,7 +132,7 @@ public class Logics : MonoBehaviour
             --BulletPower;
 
         if (Input.GetKeyDown(KeyCode.KeypadDivide))
-            maxShotDelay += 0.1f;
+            AddSpeedUp();
 
         if (Input.GetKeyDown(KeyCode.KeypadMultiply))
             maxShotDelay -= 0.1f;
@@ -155,6 +158,7 @@ public class Logics : MonoBehaviour
 
         scoreText.text = string.Format("Score: {0:n0}", score);
         highScoreText.text = string.Format("High Score: {0:n0}", highScore);
+        UpdateLifeCount();
     }
 
     private void FixedUpdate()
@@ -162,9 +166,14 @@ public class Logics : MonoBehaviour
         Fire();
         Reload();
         UpdatePlayerShotPoint();
-        
 
-        curSpawnDelay += Time.fixedDeltaTime;
+        if (!isStopLogictime)
+        {
+            if (!isSlowed)
+                curSpawnDelay += Time.fixedDeltaTime;
+            else
+                curSpawnDelay += Time.fixedDeltaTime * 0.5f;
+        }
 
         if ((curSpawnDelay > forceSpawnDelay) && (aliveEnemies == 0) && !spawnEnd)
             nextSpawnDelay = forceSpawnDelay;
@@ -177,7 +186,7 @@ public class Logics : MonoBehaviour
 
         SetAnimationDir();
         if (isSlowed)
-            totalSpeed = baseSpeed * slowModifyer;
+            totalSpeed = 2.5f;
         else
             totalSpeed = baseSpeed;
 
@@ -185,8 +194,7 @@ public class Logics : MonoBehaviour
 
     }
 
-
-    
+        
     void ReadSpawnData()
     {
         // 변수 초기화
@@ -209,9 +217,10 @@ public class Logics : MonoBehaviour
             spawnData.spawnDelay = float.Parse(line.Split(',')[0]);
             spawnData.type = line.Split(',')[1];
             spawnData.movePatternID = int.Parse(line.Split(',')[2]);
-            spawnData.speed = int.Parse(line.Split(',')[3]);
+            spawnData.speed = float.Parse(line.Split(',')[3]);
             spawnData.dropType = line.Split(',')[4];
             spawnData.shotDelay = float.Parse(line.Split(',')[5]);
+            spawnData.bulletSpeed = float.Parse(line.Split(',')[6]);
 
             spawnList.Add(spawnData);
         }
@@ -248,6 +257,7 @@ public class Logics : MonoBehaviour
 
     void SpawnEnemy()
     {
+        if (GetLogicTimeFlag()) return;
 
         GameObject tmp;
         switch (spawnList[spawnIndex].type)
@@ -257,7 +267,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemySmall");
                     if (tmp != null)
                     {                        
-                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
+                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].bulletSpeed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
                     break;
@@ -267,7 +277,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemyMedium");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Medium", "3-Way", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
+                        tmp.GetComponent<Enemy>().Init("Medium", "3-Way", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].bulletSpeed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
 
@@ -279,7 +289,7 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemySmall");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
+                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].bulletSpeed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
                     break;
@@ -287,16 +297,18 @@ public class Logics : MonoBehaviour
         }
 
         // 다음 스폰 딜레이로 갱신
-        nextSpawnDelay = spawnList[spawnIndex++].spawnDelay;
-        
-        // 리스트 끝이면 스폰 종료
-        // 보스전 시작 준비
-        if (spawnIndex == spawnList.Count)
+        spawnIndex += 1;
+
+        if (spawnIndex >= spawnList.Count - 1)
         {
             spawnEnd = true;
             Invoke("StartBossStage", 3f);
             AudioManager.Instance.StopBGM();
         }
+        else
+        nextSpawnDelay = spawnList[spawnIndex].spawnDelay;
+        
+        
 
     }
     
@@ -354,14 +366,14 @@ public class Logics : MonoBehaviour
         return isSlowed;
     }
 
-    public float GetSpeed()
+    public float GetPlayerSpeed()
     {
-        return baseSpeed;
+        return isSlowed ? slowedSpeed : totalSpeed;
     }
 
     public float GetSlowedSpeed()
     {
-        return baseSpeed * slowModifyer;
+        return slowedSpeed;
     }
 
     public void SetPlayerMovement(float h, float v)
@@ -373,10 +385,14 @@ public class Logics : MonoBehaviour
 
     void Fire()
     {
+
         if (!Input.GetButton("Fire1") && !Input.GetKey(KeyCode.Space))
             return;
 
-        if (curShotDelay < maxShotDelay)
+        if (curShotDelay < shotDelay)
+            return;
+
+        if (GetLogicTimeFlag())
             return;
 
         // 플레이어 총알 패턴
@@ -430,8 +446,8 @@ public class Logics : MonoBehaviour
                     bulletMLv_4_2.transform.position = playerShotPoint + Vector3.right * 0.15f;
                     bulletRLv_4_1.transform.position = playerShotPoint + Vector3.right * 0.2f;
                     bulletRLv_4_2.transform.position = playerShotPoint + Vector3.right * 0.3f;
-                    bulletLLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
-                    bulletLLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
+                    bulletLLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
+                    bulletLLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
                     bulletMLv_4_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletMLv_4_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletRLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * 10, 1, false);
@@ -448,8 +464,8 @@ public class Logics : MonoBehaviour
                     bulletMLv_5.transform.position = playerShotPoint;
                     bulletRLv_5_1.transform.position = playerShotPoint + Vector3.right * 0.2f;
                     bulletRLv_5_2.transform.position = playerShotPoint + Vector3.right * 0.3f;
-                    bulletLLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
-                    bulletLLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
+                    bulletLLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
+                    bulletLLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
                     bulletMLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 3, false);
                     bulletRLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * 10, 1, false);
                     bulletRLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * 10, 1, false);
@@ -478,8 +494,8 @@ public class Logics : MonoBehaviour
                     bulletMLv_7_2.transform.position = playerShotPoint + Vector3.right * 0.25f;
                     bulletRLv_7_1.transform.position = playerShotPoint + Vector3.right * 0.3f;
                     bulletRLv_7_2.transform.position = playerShotPoint + Vector3.right * 0.35f;
-                    bulletLLv_7_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
-                    bulletLLv_7_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
+                    bulletLLv_7_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
+                    bulletLLv_7_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
                     bulletMLv_7_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletMLv_7_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
                     bulletRLv_7_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * 10, 1, false);
@@ -580,7 +596,13 @@ public class Logics : MonoBehaviour
 
     void Reload()
     {
-        curShotDelay += Time.fixedDeltaTime;
+        if (!isStopLogictime)
+        {
+            if (!isSlowed)
+                curShotDelay += Time.fixedDeltaTime;
+            else
+                curShotDelay += Time.fixedDeltaTime * 0.5f;
+        }
     }
 
     void UpdatePlayerShotPoint()
@@ -611,6 +633,19 @@ public class Logics : MonoBehaviour
         {
             highScore = score;
         }
+
+        if(!gotFirstLifeBonus && score >= 50000)
+        {
+            gotFirstLifeBonus = true;
+            life += 1;
+            UpdateLifeCount();
+        }
+        else if (!gotSecondLifeBonus && score >= 100000)
+        {
+            gotSecondLifeBonus = true;
+            life += 1;
+            UpdateLifeCount();
+        }
     }
 
     public void RespawnPlayer()
@@ -632,6 +667,7 @@ public class Logics : MonoBehaviour
         player.transform.position = Vector3.down * 3.5f;
         player.SetActive(true);
         player.GetComponent<InputController>().isHit = false;
+        curShotDelay = 0;
     }
 
 
@@ -663,15 +699,7 @@ public class Logics : MonoBehaviour
         else
             RespawnPlayer();
 
-        for (int i = 0; i < lifeIconsRoot.transform.childCount; i++)
-        {
-            if (i < life)
-            {
-                lifeIconsRoot.transform.GetChild(i).gameObject.SetActive(true);
-            }
-            else
-                lifeIconsRoot.transform.GetChild(i).gameObject.SetActive(false);
-        }
+        
     }
 
 
@@ -686,7 +714,6 @@ public class Logics : MonoBehaviour
 
     public void GameClear()
     {
-
         CheckHighScore();
         CommonUISet.SetActive(false);
         highScoreTextOnGameOver.text = $"HighScore: {highScore}";
@@ -729,17 +756,21 @@ public class Logics : MonoBehaviour
 
     void SetCommonUI()
     {
-        life = 5;
+        life = 3;
         playerShotPoint = player.transform.position + Vector3.up * 0.5f;
         BulletPower = 1;
 
-        for (int i = 0; i < life; i++)
+        for (int i = 0; i < 5; i++)
         {
             GameObject l = new GameObject();
             l.AddComponent<Image>();
             l.GetComponent<Image>().sprite = lifeImage;
             l.transform.SetParent(lifeIconsRoot.transform);
             l.name = $"life_{i}";
+            if (i > life)
+                l.SetActive(false);
+            else
+                l.SetActive(true);
         }
 
         BossHPBar.gameObject.SetActive(false);
@@ -780,11 +811,6 @@ public class Logics : MonoBehaviour
 #endif
     }
 
-    public float GetSlowModifier()
-    {
-        return slowModifyer;
-    }
-
     public void DropItem(Vector3 _position, string _itemName)
     {
         if(_itemName == "Speed")
@@ -802,14 +828,14 @@ public class Logics : MonoBehaviour
 
     public void AddSpeedUp()
     {
-        baseSpeed += 0.075f;
-        maxShotDelay -= 0.05f;
+        baseSpeed += 0.35f;
+        shotDelay -= 0.09f;
 
         if (baseSpeed > 9)
             baseSpeed = 9;
 
-        if (maxShotDelay < 0.12f)
-            maxShotDelay = 0.12f;
+        if (shotDelay < maxShotDelay)
+            shotDelay = maxShotDelay;
     }
 
     public void AddPowerUp()
@@ -829,19 +855,53 @@ public class Logics : MonoBehaviour
         {
             isBossAppear = true;
             AudioManager.Instance.ChangeBGM(1);
-            GameObject boss = Instantiate(BossObject);
-            boss.name = "Boss";
+            GameObject boss = objPool.GetObject("boss");
         }
 
-        objPool.ClearEnemyBullets();
+        ClearAllEnemyBullets();
     }
 
+    public void ClearAllEnemyBullets()
+    {
+        for (int i =0; i < objPool.transform.childCount; i++)
+        {
+            if(objPool.transform.GetChild(i).CompareTag("EnemyBullet"))
+            {
+                objPool.transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+    }
 
+    public void ClearAllEnemy()
+    {
+        for (int i = 0; i < objPool.transform.childCount; i++)
+        {
+            if (objPool.transform.GetChild(i).CompareTag("Enemy"))
+            {
+                objPool.transform.GetChild(i).gameObject.SetActive(false);
+            }
+        }
+
+    }
     public void UpdateBossHP(int _curHP)
     {
         BossHPBar.GetComponentInChildren<Slider>().value = _curHP;
 
     }
+
+    public void UpdateLifeCount()
+    {
+        for (int i = 0; i < lifeIconsRoot.transform.childCount; i++)
+        {
+            if (i < life)
+            {
+                lifeIconsRoot.transform.GetChild(i).gameObject.SetActive(true);
+            }
+            else
+                lifeIconsRoot.transform.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+
     public void SetBossHPUI(int _maxHP)
     {         
         BossHPBar.GetComponentInChildren<Slider>().maxValue = _maxHP;
@@ -855,7 +915,17 @@ public class Logics : MonoBehaviour
     {
         isBossPhase2 = true;
         spawnIndex = 0;
-        spawnEnd = false;
-        
+        spawnEnd = false;        
     }
+
+    public void StopLogicTime()
+    {
+        isStopLogictime = true;
+    }
+
+    public bool GetLogicTimeFlag()
+    {
+        return isStopLogictime;
+    }
+
 }

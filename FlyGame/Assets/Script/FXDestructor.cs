@@ -11,6 +11,7 @@ public class FXDestructor : MonoBehaviour
     private void Start()
     {
         curTimerCount = 0;
+        transform.position = transform.parent.transform.position;
     }
 
     private void Update()

@@ -19,6 +19,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip clipEnemyMediumDeath;
     public AudioClip clipPowerUp;
     public AudioClip clipSpeedUp;
+    public AudioClip clipExtraLife;
 
     private static AudioManager instance = null;
     public static AudioManager Instance
@@ -69,9 +70,16 @@ public class AudioManager : MonoBehaviour
             case "SpeedUp":
                 audSrc.PlayOneShot(clipSpeedUp);
                 break;
+            case "BonusLife":
+                audSrc.PlayOneShot(clipExtraLife);
+                break;
         }
     }
 
+    public void PlaySFX(AudioClip _clip)
+    {
+        audSrc.PlayOneShot(_clip);
+    }
     public void ChangeBGM(int _idx)
     {
         audSrc.clip = BGMs[_idx];

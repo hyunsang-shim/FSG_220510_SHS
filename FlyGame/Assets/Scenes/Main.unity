@@ -441,6 +441,7 @@ MonoBehaviour:
   clipEnemyMediumDeath: {fileID: 8300000, guid: 662f8b0fe7f39d341a63968054ccc95d, type: 3}
   clipPowerUp: {fileID: 8300000, guid: 9f050c81c8a71ec40b89754fedbaf2d9, type: 3}
   clipSpeedUp: {fileID: 8300000, guid: 7b129fe1529abe942b475d8eaaecd57b, type: 3}
+  clipExtraLife: {fileID: 8300000, guid: 6a030efbf54e9f94ca1f8def478d7405, type: 3}
 --- !u!82 &29508138
 AudioSource:
   m_ObjectHideFlags: 0
@@ -1743,14 +1744,15 @@ MonoBehaviour:
   dropItems:
   - {fileID: 7375147013826768889, guid: 1d27bcffa4043914db857476c3ffcd44, type: 3}
   - {fileID: 7903182773899973236, guid: 09f124f5a3d25cb478e3cbc9f16e625d, type: 3}
-  BossObject: {fileID: 1472203021306861922, guid: ec622ce30c895774288803691e3c13ce, type: 3}
-  life: 5
+  life: 3
   powerLevel: 1
-  BulletPower: 2
-  maxShotDelay: 0.3
+  BulletPower: 1
+  maxShotDelay: 0.4
   baseSpeed: 4
-  defaultEnemyHP_Small: 2
-  defaultEnemyHP_Medium: 15
+  firstBonusLifeScore: 5000
+  SecondBonusLifeScore: 25000
+  defaultEnemyHP_Small: 1
+  defaultEnemyHP_Medium: 8
   defaultEnemyHP_Boss: 100
   aliveEnemies: 0
   forceSpawnDelay: 1

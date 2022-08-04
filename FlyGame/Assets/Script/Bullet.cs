@@ -8,7 +8,7 @@ public class Bullet : MonoBehaviour
     Rigidbody2D rig;
     bool isSlowable = true;
     bool isRotate = false;
-    Vector2 oldVelocity, newVelocity;
+    Vector2 normalVelocity, slowedVelocity;
 
 
     private void Awake()
@@ -20,18 +20,9 @@ public class Bullet : MonoBehaviour
     private void Update()
     {
         if (Logics.Instance.GetSlowState())
-        {
             OnSlowEnabled();
-        }
         else
             OnSlowDisabled();
-
-        if(isRotate)
-        {
-            transform.Rotate(Vector3.forward * 8);
-        }
-
-
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -53,22 +44,33 @@ public class Bullet : MonoBehaviour
 
     public void OnSlowEnabled()
     {
-        if (gameObject.name == "EnemyBullet")
-        {
-            rig.velocity = newVelocity;
-        }
+        if(isSlowable)
+            rig.velocity = slowedVelocity;
+        else
+            rig.velocity = normalVelocity;
+
+
+        if(!Logics.Instance.GetLogicTimeFlag())
+            if (isRotate)
+                transform.Rotate(Vector3.forward * 2);
+
     }
 
     public void OnSlowDisabled()
     {
-        rig.velocity = oldVelocity;
+        rig.velocity = normalVelocity;
+
+        if (!Logics.Instance.GetLogicTimeFlag()) 
+            if (isRotate)
+                transform.Rotate(Vector3.forward * 12);
+
     }
 
 
     public void SetBullet(Vector2 _speed, int _dmg, bool _rot = false, bool _slowable = false)
     {
-        rig.velocity = oldVelocity = _speed;
-        newVelocity = oldVelocity / Logics.Instance.GetSlowModifier();
+        rig.velocity = normalVelocity = _speed;
+        slowedVelocity = normalVelocity / Logics.Instance.GetSlowedSpeed() * 0.5f;
 
         isRotate = _rot;
 

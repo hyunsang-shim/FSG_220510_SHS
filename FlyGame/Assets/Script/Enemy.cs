@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class Enemy : MonoBehaviour
 {
     float speed;
+    float bulletSpeed;
     int HP;
     bool valunable;
     public int score;
@@ -14,9 +15,10 @@ public class Enemy : MonoBehaviour
     int movePatternID;
     int positionID = 1;
     float maxShotDelay;
-    float curDelay;
+    float curDelay;    
     bool shotOpen = false;
     public Slider hpbar;
+    float invalunableDelay = 1.8f;
 
 
     Rigidbody2D rig2d;
@@ -58,24 +60,27 @@ public class Enemy : MonoBehaviour
         if(valunable)
             FireBullet();
 
-        //hpbar.transform.parent.position = transform.position + hpbarOffset;
     }
     private void OnEnable()
     {
-        Invoke("SetValunable", 2);
+        Invoke("SetValunable", invalunableDelay);
         curDelay = 0;
+        SetDefaultSpriteColor();
+
 
     }
 
     void SetValunable()
     {
         valunable = true;
-        InvokeRepeating("FireBullet", maxShotDelay, maxShotDelay);
     }
     private void FixedUpdate()
     {
         MoveEnemy();
-        curDelay += Time.fixedDeltaTime;
+
+        if(!Logics.Instance.GetLogicTimeFlag())
+            curDelay += Time.fixedDeltaTime;
+
 
     }
 
@@ -106,13 +111,14 @@ public class Enemy : MonoBehaviour
         size = s;
     }
 
-    public void Init(string _size, string _shotType, int _movePattern, float _speed, string _dropType = "None", float _shotDelay = 9999)
+    public void Init(string _size, string _shotType, int _movePattern, float _speed, float _bulletSpeed, string _dropType = "None", float _shotDelay = 9999)
     {
 
         size = _size;
         HP = Logics.Instance.GetEnemyHP(size);
         MyShotType = _shotType;
         speed = _speed;
+        bulletSpeed = _bulletSpeed;
 
         MovePoints = new List<Transform>();
 
@@ -135,7 +141,7 @@ public class Enemy : MonoBehaviour
 
         shotOpen = false;
 
-        InvokeRepeating("FireBullet", maxShotDelay, maxShotDelay);
+        InvokeRepeating("FireBullet", maxShotDelay + 2, maxShotDelay);
 
     }
 
@@ -168,12 +174,8 @@ public class Enemy : MonoBehaviour
                     if (bullet != null)
                     {
                         bullet.transform.position = transform.position;
-                        bullet.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
-                        Rigidbody2D rigidLv_1 = bullet.GetComponent<Rigidbody2D>();
-
                         Vector2 BulletSpeed = (targetPos - (Vector2)transform.position).normalized * 3;
-                        rigidLv_1.AddForce(BulletSpeed, ForceMode2D.Impulse);
-                        bullet.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false);                     
+                        bullet.GetComponent<Bullet>().SetBullet(BulletSpeed, 1, false, true);                     
                     }
                     break;
                 }
@@ -181,34 +183,32 @@ public class Enemy : MonoBehaviour
                 {
 
                     GameObject bullet1, bullet2, bullet3;
-                    Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * 3;
                     bullet1 = Logics.Instance.objPool.GetObject("bossBulletsD");
+                    bullet2 = Logics.Instance.objPool.GetObject("bossBulletsD");
+                    bullet3 = Logics.Instance.objPool.GetObject("bossBulletsD");
+
                     if (bullet1 != null)
                     {
+                        Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * 3;
                         bullet1.transform.position = transform.position;
-                        bullet1.GetComponent<Bullet>().SetBullet(dirVec1, 1, true);
-                        Rigidbody2D rig1 = bullet1.GetComponent<Rigidbody2D>();
+                        bullet1.GetComponent<Bullet>().SetBullet(dirVec1, 1, true, true);
                     }
 
-                    Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * 3;
-                    bullet2 = Logics.Instance.objPool.GetObject("bossBulletsD");
 
                     if (bullet2 != null)
                     {
+                        Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * 3;
                         bullet2.transform.position = transform.position;
                         dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.15f) + dirVec2.x, -1).normalized * 3;
-                        bullet2.GetComponent<Bullet>().SetBullet(dirVec2, 1, true);
-                        Rigidbody2D rig2 = bullet2.GetComponent<Rigidbody2D>();
+                        bullet2.GetComponent<Bullet>().SetBullet(dirVec2, 1, true, true);
                     }
 
-                    Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * 3;
-                    bullet3 = Logics.Instance.objPool.GetObject("bossBulletsD");
                     if (bullet3 != null)
                     {
+                        Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * 3;
                         bullet3.transform.position = transform.position;
                         dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)) + dirVec3.x, -1).normalized * 3;
-                        bullet3.GetComponent<Bullet>().SetBullet(dirVec3, 1, true);
-                        Rigidbody2D rig3 = bullet3.GetComponent<Rigidbody2D>();
+                        bullet3.GetComponent<Bullet>().SetBullet(dirVec3, 1, true, true);
                     }
                     break; 
                 }
@@ -220,9 +220,17 @@ public class Enemy : MonoBehaviour
 
     private void MoveEnemy()
     {
-        transform.position = Vector3.MoveTowards(transform.position, nextPos, speed * Time.fixedDeltaTime);
+        if (Logics.Instance.GetLogicTimeFlag())
+            return;
+
+        if(!Logics.Instance.GetSlowState())
+            transform.position = Vector3.MoveTowards(transform.position, nextPos, speed * Time.fixedDeltaTime);
+        else
+            transform.position = Vector3.MoveTowards(transform.position, nextPos, Logics.Instance.GetSlowedSpeed() * 0.5f * Time.fixedDeltaTime);
+
         curPos = transform.position;
     }
+
 
     void OnHit(int dmg)
     {

@@ -10,4 +10,5 @@ public class Spawner
     public float speed;
     public string dropType;
     public float shotDelay;
+    public float bulletSpeed;
 }
