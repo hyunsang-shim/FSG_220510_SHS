@@ -76,3 +76,5 @@ crashlytics-build.properties
 /[Oo]bj/[Dd]ebug/*
 FlyGame/Temp/UnityLockfile
 FlyGame/Temp/workerlic
+*.log
+*.log

@@ -20,8 +20,8 @@ public class ObjPool : MonoBehaviour
     public GameObject prefab_bossBulletsD;
 
     // Prefabs for PowerUps and Etc.
-    public GameObject prefab_powerUps_NormalPower;
-    public GameObject prefab_powerUps_FullPower;
+    public GameObject prefab_PowerUp;
+    public GameObject prefab_SpeedUp;
     public GameObject prefab_bonuses;
     public GameObject prefab_explosion_Big;
     public GameObject prefab_explosion_Small;
@@ -44,8 +44,8 @@ public class ObjPool : MonoBehaviour
     GameObject[] bossBulletsD;
 
     // PowerUps and Etc.
-    GameObject[] powerUps_NormalPower;
-    GameObject[] powerUps_FullPower;
+    GameObject[] powerUp;
+    GameObject[] speedUp;
     GameObject[] bonuses;
     GameObject[] explosion_Medium;
     GameObject[] explosion_Small;
@@ -68,8 +68,8 @@ public class ObjPool : MonoBehaviour
         bossBulletsC = new GameObject[200];
         bossBulletsD = new GameObject[200];
 
-        powerUps_NormalPower = new GameObject[5];
-        powerUps_FullPower = new GameObject[5];
+        powerUp = new GameObject[5];
+        speedUp = new GameObject[5];
         bonuses = new GameObject[5];
         explosion_Medium = new GameObject[30];
         explosion_Small= new GameObject[30];
@@ -157,18 +157,18 @@ public class ObjPool : MonoBehaviour
             bossBulletsD[i].transform.SetParent(transform);
         }
 
-        for (int i = 0; i < powerUps_NormalPower.Length; i++)
+        for (int i = 0; i < powerUp.Length; i++)
         {
-            powerUps_NormalPower[i] = Instantiate(prefab_powerUps_NormalPower);
-            powerUps_NormalPower[i].SetActive(false);
-            powerUps_NormalPower[i].transform.SetParent(transform);
+            powerUp[i] = Instantiate(prefab_PowerUp);
+            powerUp[i].SetActive(false);
+            powerUp[i].transform.SetParent(transform);
         }
 
-        for (int i = 0; i < powerUps_FullPower.Length; i++)
+        for (int i = 0; i < speedUp.Length; i++)
         {
-            powerUps_FullPower[i] = Instantiate(prefab_powerUps_FullPower);
-            powerUps_FullPower[i].SetActive(false);
-            powerUps_FullPower[i].transform.SetParent(transform);
+            speedUp[i] = Instantiate(prefab_SpeedUp);
+            speedUp[i].SetActive(false);
+            speedUp[i].transform.SetParent(transform);
         }
 
         for (int i = 0; i < bonuses.Length; i++)
@@ -232,11 +232,11 @@ public class ObjPool : MonoBehaviour
             case "bossBulletsD":
                 targetPool = bossBulletsD;
                 break;
-            case "powerUps_NormalPower":
-                targetPool = powerUps_NormalPower;
+            case "PowerUp":
+                targetPool = powerUp;
                 break;
-            case "powerUps_FullPower":
-                targetPool = powerUps_FullPower;
+            case "SpeedUp":
+                targetPool = speedUp;
                 break;
             case "bonuses":
                 targetPool = bonuses;

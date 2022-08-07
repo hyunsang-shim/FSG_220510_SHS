@@ -81,7 +81,7 @@ public class Enemy : MonoBehaviour
         if(!Logics.Instance.GetLogicTimeFlag())
             curDelay += Time.fixedDeltaTime;
 
-
+        FireBullet();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -141,7 +141,7 @@ public class Enemy : MonoBehaviour
 
         shotOpen = false;
 
-        InvokeRepeating("FireBullet", maxShotDelay + 2, maxShotDelay);
+        Invoke("FireBullet", maxShotDelay + 2);
 
     }
 
@@ -187,30 +187,20 @@ public class Enemy : MonoBehaviour
                     bullet2 = Logics.Instance.objPool.GetObject("bossBulletsD");
                     bullet3 = Logics.Instance.objPool.GetObject("bossBulletsD");
 
-                    if (bullet1 != null)
-                    {
-                        Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * 3;
-                        bullet1.transform.position = transform.position;
-                        bullet1.GetComponent<Bullet>().SetBullet(dirVec1, 1, true, true);
-                    }
+                    bullet1.transform.position = transform.position;
+                    bullet2.transform.position = transform.position;
+                    bullet3.transform.position = transform.position;
 
+                    Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * 3;
+                    Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * 3;
+                    Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * 3;
+                    dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.2f) + dirVec2.x, -1).normalized * 3;
+                    dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.2f)) + dirVec3.x, -1).normalized * 3;
+                    bullet1.GetComponent<Bullet>().SetBullet(dirVec1, 1, true, true);
+                    bullet2.GetComponent<Bullet>().SetBullet(dirVec2, 1, true, true);
+                    bullet3.GetComponent<Bullet>().SetBullet(dirVec3, 1, true, true);
 
-                    if (bullet2 != null)
-                    {
-                        Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * 3;
-                        bullet2.transform.position = transform.position;
-                        dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.15f) + dirVec2.x, -1).normalized * 3;
-                        bullet2.GetComponent<Bullet>().SetBullet(dirVec2, 1, true, true);
-                    }
-
-                    if (bullet3 != null)
-                    {
-                        Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * 3;
-                        bullet3.transform.position = transform.position;
-                        dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)) + dirVec3.x, -1).normalized * 3;
-                        bullet3.GetComponent<Bullet>().SetBullet(dirVec3, 1, true, true);
-                    }
-                    break; 
+                    break;
                 }
         }
 

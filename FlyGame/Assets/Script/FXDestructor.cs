@@ -11,20 +11,17 @@ public class FXDestructor : MonoBehaviour
     private void Start()
     {
         curTimerCount = 0;
-        transform.position = transform.parent.transform.position;
     }
 
     private void Update()
     {
         curTimerCount += Time.deltaTime;
-        if (curTimerCount >= destructionDelay)
-            DestructSelf();
-    }
 
-    void DestructSelf()
-    {
-        gameObject.SetActive(false);
-        curTimerCount = 0;
+        if (curTimerCount >= destructionDelay)
+        {
+            gameObject.SetActive(false);
+            curTimerCount = 0;
+        }
     }
 
 }

@@ -22,11 +22,11 @@ public class itemPowerUp : MonoBehaviour
         {
             Logics.Instance.AddPowerUp();
             AudioManager.Instance.PlaySFX("PowerUp");
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
 
         if (collision.CompareTag("BulletKiller"))
-            Destroy(gameObject);
+            gameObject.SetActive(false);
     }
 
     private void FixedUpdate()

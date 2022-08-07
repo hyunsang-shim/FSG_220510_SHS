@@ -1599,7 +1599,7 @@ MonoBehaviour:
   maxShotDelay: 0.4
   baseSpeed: 4
   firstBonusLifeScore: 5000
-  secondBonusLifeScore: 25000
+  secondBonusLifeScore: 10000
   defaultEnemyHP_Small: 1
   defaultEnemyHP_Medium: 8
   defaultEnemyHP_Boss: 500
@@ -1706,7 +1706,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Retry
+  m_Text: Title
 --- !u!222 &657454024
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2482,7 +2482,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Retry
+  m_Text: Title
 --- !u!222 &975858711
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3974,8 +3974,8 @@ MonoBehaviour:
   prefab_bossBulletsB: {fileID: 6556191809039534808, guid: 64859b72eea18d741a9568d2d9485a85, type: 3}
   prefab_bossBulletsC: {fileID: 6172159190807883912, guid: c2dcdd2be40741d47b8ce53f3ab67231, type: 3}
   prefab_bossBulletsD: {fileID: 6172159190807883912, guid: dc254198cc6d6744a9e576b529d5f891, type: 3}
-  prefab_powerUps_NormalPower: {fileID: 7375147013826768889, guid: 1d27bcffa4043914db857476c3ffcd44, type: 3}
-  prefab_powerUps_FullPower: {fileID: 7903182773899973236, guid: 09f124f5a3d25cb478e3cbc9f16e625d, type: 3}
+  prefab_PowerUp: {fileID: 7375147013826768889, guid: 1d27bcffa4043914db857476c3ffcd44, type: 3}
+  prefab_SpeedUp: {fileID: 7903182773899973236, guid: 09f124f5a3d25cb478e3cbc9f16e625d, type: 3}
   prefab_bonuses: {fileID: 3002559364930843350, guid: cfb7fa9578be3d44587ebe0c0ae8e2a5, type: 3}
   prefab_explosion_Big: {fileID: 6088837143376474335, guid: aa5c940a676add6469b1c082b45fe5cd, type: 3}
   prefab_explosion_Small: {fileID: 5156775181663589347, guid: 676880819374758439439636bf379d32, type: 3}
@@ -4843,9 +4843,9 @@ Camera:
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.36363637
+    x: 0
     y: 0
-    width: 0.27272728
+    width: 1
     height: 1
   near clip plane: 0.3
   far clip plane: 1000

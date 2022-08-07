@@ -234,34 +234,33 @@ public class EnemyBoss : MonoBehaviour
         {
             Vector2 targetPos = Logics.Instance.player.transform.position;
 
-            GameObject bullet1, bullet2, bullet3;
+            GameObject bullet1, bullet2, bullet3, bullet4, bullet5;
             bullet1 = Logics.Instance.objPool.GetObject("bossBulletsB"); 
             bullet2 = Logics.Instance.objPool.GetObject("bossBulletsB");
             bullet3 = Logics.Instance.objPool.GetObject("bossBulletsB");
+            bullet4 = Logics.Instance.objPool.GetObject("bossBulletsB");
+            bullet5 = Logics.Instance.objPool.GetObject("bossBulletsB");
 
             Vector2 dirVec1 = (targetPos - (Vector2)transform.position).normalized * speed;
-            if (bullet1 != null)
-            {
-                bullet1.transform.position = transform.position;
-                bullet1.GetComponent<Bullet>().SetBullet(dirVec1.normalized * speed, 1, true, true);
-            }
-
             Vector2 dirVec2 = (targetPos - (Vector2)transform.position).normalized * speed;
-
-            if (bullet2 != null)
-            {
-                bullet2.transform.position = transform.position;
-                dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.15f) + dirVec2.x, -1).normalized * speed;
-                bullet2.GetComponent<Bullet>().SetBullet(dirVec2.normalized * speed, 1, true, true);
-            }
-
             Vector2 dirVec3 = (targetPos - (Vector2)transform.position).normalized * speed;
-            if (bullet3 != null)
-            {
-                bullet3.transform.position = transform.position;
-                dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)) + dirVec3.x, -1).normalized * speed;
-                bullet3.GetComponent<Bullet>().SetBullet(dirVec3.normalized * speed, 1, true, true);
-            }
+            Vector2 dirVec4 = (targetPos - (Vector2)transform.position).normalized * speed;
+            Vector2 dirVec5 = (targetPos - (Vector2)transform.position).normalized * speed;
+
+            bullet1.transform.position = transform.position;
+            bullet2.transform.position = transform.position;
+            bullet3.transform.position = transform.position;
+            bullet4.transform.position = transform.position;
+            bullet5.transform.position = transform.position;
+            dirVec2 = new Vector2(Mathf.Sin(Mathf.PI * 0.15f) + dirVec2.x, -1).normalized * speed;
+            dirVec3 = new Vector2(Mathf.Sin(Mathf.PI * (-0.15f)) + dirVec3.x, -1).normalized * speed; 
+            dirVec4 = new Vector2(Mathf.Sin(Mathf.PI * (0.25f)) + dirVec4.x, -1).normalized * speed; 
+            dirVec5 = new Vector2(Mathf.Sin(Mathf.PI * (-0.25f)) + dirVec5.x, -1).normalized * speed; 
+            bullet1.GetComponent<Bullet>().SetBullet(dirVec1.normalized * speed, 1, true, true);
+            bullet2.GetComponent<Bullet>().SetBullet(dirVec2.normalized * speed, 1, true, true);
+            bullet3.GetComponent<Bullet>().SetBullet(dirVec3.normalized * speed, 1, true, true);
+            bullet4.GetComponent<Bullet>().SetBullet(dirVec4.normalized * speed, 1, true, true);
+            bullet5.GetComponent<Bullet>().SetBullet(dirVec5.normalized * speed, 1, true, true);
         }
 
         if (!Logics.Instance.GetLogicTimeFlag())
@@ -301,7 +300,7 @@ public class EnemyBoss : MonoBehaviour
             bullet.transform.position = transform.position;
 
             Vector2 dirVec = Logics.Instance.player.transform.position - transform.position;
-            Vector2 randVec = new Vector2(Random.Range(-1.5f, 1.5f), Random.Range(0f, 2.5f));
+            Vector2 randVec = new Vector2(Random.Range(-2.5f, 2.5f), Random.Range(0f, 2.5f));
             dirVec += randVec;
             bullet.GetComponent<Bullet>().SetBullet(dirVec.normalized * speed, 1, true);
         }

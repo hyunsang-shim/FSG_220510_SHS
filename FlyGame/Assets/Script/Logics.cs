@@ -271,8 +271,11 @@ public class Logics : MonoBehaviour
                 {
                     tmp = objPool.GetObject("enemySmall");
                     if (tmp != null)
-                    {                        
-                        tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].bulletSpeed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
+                    {   
+                        if(isBossPhase2)
+                            tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed*1.5f, spawnList[spawnIndex].bulletSpeed*1.5f, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
+                        else
+                            tmp.GetComponent<Enemy>().Init("Small", "OneShotToTarget", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].bulletSpeed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
                     break;
@@ -282,7 +285,10 @@ public class Logics : MonoBehaviour
                     tmp = objPool.GetObject("enemyMedium");
                     if (tmp != null)
                     {
-                        tmp.GetComponent<Enemy>().Init("Medium", "3-Way", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].bulletSpeed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
+                        if(isBossPhase2)
+                            tmp.GetComponent<Enemy>().Init("Medium", "3-Way", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed*2f, spawnList[spawnIndex].bulletSpeed*2f, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
+                        else
+                            tmp.GetComponent<Enemy>().Init("Medium", "3-Way", spawnList[spawnIndex].movePatternID, spawnList[spawnIndex].speed, spawnList[spawnIndex].bulletSpeed, spawnList[spawnIndex].dropType, spawnList[spawnIndex].shotDelay);
                         aliveEnemies++;
                     }
 
@@ -594,11 +600,8 @@ public class Logics : MonoBehaviour
             string enemySize = e.GetSize();
             AudioManager.Instance.PlaySFX("EnemyDeath_" + enemySize);
             AddScore(_score);
-            GameObject fx = new GameObject();
-            fx.gameObject.SetActive(false);
-            fx = objPool.GetObject("explosion_" + enemySize);            
-            fx.transform.position = e.transform.position;
-            fx.SetActive(true);
+            GameObject fx = objPool.GetObject("explosion_"+ enemySize);
+            fx.transform.position = _enemy.transform.position;
             _enemy.gameObject.SetActive(false);
             aliveEnemies--;                    
         }
@@ -694,34 +697,16 @@ public class Logics : MonoBehaviour
             GameObject playerDieFX_3 = objPool.GetObject("explosion_Medium");
             GameObject playerDieFX_4 = objPool.GetObject("explosion_Medium");
 
-            playerDieFX_4.transform.position = player.transform.position;
-            playerDieFX_3.transform.position = player.transform.position;
-            playerDieFX_2.transform.position = player.transform.position;
-            playerDieFX_1.transform.position = player.transform.position;
-
-            Debug.Log($"Before AddForce.=============");
-            Debug.Log($"player.transform.position: {player.transform.position}");
-            Debug.Log($"playerDieFX_1.transform.position: {playerDieFX_1.transform.position}");
-            Debug.Log($"playerDieFX_2.transform.position: {playerDieFX_2.transform.position}");
-            Debug.Log($"playerDieFX_3.transform.position: {playerDieFX_3.transform.position}");
-            Debug.Log($"playerDieFX_4.transform.position: {playerDieFX_4.transform.position}");
-
             playerDieFX_1.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 1) * 2, ForceMode2D.Impulse);
             playerDieFX_2.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 1) * 2, ForceMode2D.Impulse);
             playerDieFX_3.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, -1) * 2, ForceMode2D.Impulse);
             playerDieFX_4.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, -1) * 2, ForceMode2D.Impulse);
 
-            playerDieFX_4.transform.position = player.transform.position;
-            playerDieFX_3.transform.position = player.transform.position;
-            playerDieFX_2.transform.position = player.transform.position;
-            playerDieFX_1.transform.position = player.transform.position;
+            playerDieFX_4.transform.position = player.gameObject.transform.position;
+            playerDieFX_3.transform.position = player.gameObject.transform.position;
+            playerDieFX_2.transform.position = player.gameObject.transform.position;
+            playerDieFX_1.transform.position = player.gameObject.transform.position;
 
-            Debug.Log($"After AddForce.=============");
-            Debug.Log($"player.transform.position: {player.transform.position}");
-            Debug.Log($"playerDieFX_1.transform.position: {playerDieFX_1.transform.position}");
-            Debug.Log($"playerDieFX_2.transform.position: {playerDieFX_2.transform.position}");
-            Debug.Log($"playerDieFX_3.transform.position: {playerDieFX_3.transform.position}");
-            Debug.Log($"playerDieFX_4.transform.position: {playerDieFX_4.transform.position}");
 
             life--;
             isSlowed = false;
@@ -857,12 +842,12 @@ public class Logics : MonoBehaviour
     {
         if(_itemName == "Speed")
         {
-            GameObject item = Instantiate(dropItems[0]);
+            GameObject item = objPool.GetObject("SpeedUp");
             item.transform.position = _position;
         }
         else if (_itemName == "Power")
         {
-            GameObject item = Instantiate(dropItems[1]);
+            GameObject item = objPool.GetObject("PowerUp");
             item.transform.position = _position;
         }
     }
