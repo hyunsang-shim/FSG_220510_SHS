@@ -104,8 +104,8 @@ public class Logics : MonoBehaviour
 
         UIRoot = FindObjectOfType<Canvas>();
 
-        shotDelay = 0.6f;
-        maxShotDelay = 0.3f;
+        shotDelay = 0.45f;
+        maxShotDelay = 0.185f;
         SetCommonUI();
         ReadSpawnData();
         ReadEnemyMovePatterns();
@@ -207,6 +207,7 @@ public class Logics : MonoBehaviour
         // 파일 읽기
         TextAsset txtFile = Resources.Load("Stage_0") as TextAsset;
 
+        Debug.Log($"ReadEnemyMovePatterns() - txtFile = \n Stage_0::  {txtFile}");
         StringReader stringReader = new StringReader(txtFile.text);
 
         string line = stringReader.ReadLine();
@@ -236,6 +237,8 @@ public class Logics : MonoBehaviour
     {
 
         TextAsset txtFile = Resources.Load("EnemyMovePoints") as TextAsset;
+
+        Debug.Log($"ReadEnemyMovePatterns() - txtFile = \n EnemyMovePoints::  {txtFile}");
         StringReader stringReader = new StringReader(txtFile.text);
         int patternCount = 0;
         while (stringReader != null)
@@ -305,7 +308,9 @@ public class Logics : MonoBehaviour
         {
             spawnEnd = true;
             Invoke("StartBossStage", 3f);
-            AudioManager.Instance.StopBGM();
+
+            if(!isBossAppear)
+                AudioManager.Instance.StopBGM();
         }
         else
         nextSpawnDelay = spawnList[spawnIndex].spawnDelay;
@@ -776,7 +781,11 @@ public class Logics : MonoBehaviour
 
     public void Quit()
     {
-        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
     }
     public void OnApplicationQuit()
     {
@@ -837,9 +846,10 @@ public class Logics : MonoBehaviour
     private string getPath()
     {
 #if UNITY_EDITOR
+
         return Application.dataPath + "/Resources/" + "HighScore.csv";
 #else
-        return Application.dataPath +"/"+"HighScore.csv";
+        return Application.dataPath + "/Resources/" + "HighScore.csv";
 #endif
     }
 
@@ -860,11 +870,11 @@ public class Logics : MonoBehaviour
 
     public void AddSpeedUp()
     {
-        baseSpeed += 0.35f;
-        shotDelay -= 0.05f;
+        baseSpeed += 0.25f;
+        shotDelay -= 0.085f;
 
-        if (baseSpeed > 9)
-            baseSpeed = 9;
+        if (baseSpeed > 8)
+            baseSpeed = 8;
 
         if (shotDelay < maxShotDelay)
             shotDelay = maxShotDelay;

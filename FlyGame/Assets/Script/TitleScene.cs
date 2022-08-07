@@ -27,7 +27,6 @@ public class TitleScene : MonoBehaviour
         heart = Instantiate(objCursor);
         heart.transform.SetParent(gameObject.transform);
         heart.SetActive(false);
-        AudioManager.Instance.ChangeBGM(0);
     }
 
     private void Update()
@@ -90,9 +89,16 @@ public class TitleScene : MonoBehaviour
         
     }
 
+
+    private void Start()
+    {
+        AudioManager.Instance.ChangeBGM(0);
+    }
+
     void GetHighScore()
     {
         StreamReader stringReader = new StreamReader(getPath());
+        Debug.Log(getPath());
 
         string line = stringReader.ReadLine();
         txtHighScore.text = string.Format("{0:n0}", int.Parse(line));
@@ -101,9 +107,10 @@ public class TitleScene : MonoBehaviour
     private string getPath()
     {
 #if UNITY_EDITOR
+
         return Application.dataPath + "/Resources/" + "HighScore.csv";
 #else
-        return Application.dataPath +"/"+"HighScore.csv";
+        return Application.dataPath + "/Resources/" + "HighScore.csv";
 #endif
     }
 
@@ -115,7 +122,11 @@ public class TitleScene : MonoBehaviour
 
     public void QuitGame()
     {
-        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+    Application.Quit();
+#endif
     }
 
     private void OnGUI()
