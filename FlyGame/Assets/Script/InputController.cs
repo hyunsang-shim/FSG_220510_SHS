@@ -117,7 +117,9 @@ public class InputController : MonoBehaviour
             {
                 isHit = true;
                 Logics.Instance.PlayerHit();
-                collision.gameObject.SetActive(false);
+
+                if (collision.CompareTag("Enemy"))
+                    collision.GetComponent<Enemy>().OnHit(Logics.Instance.BulletPower);
             }
         }
 
@@ -127,7 +129,7 @@ public class InputController : MonoBehaviour
             {
                 isHit = true;
                 Logics.Instance.PlayerHit();
-                gameObject.SetActive(false);
+                collision.GetComponent<EnemyBoss>().Hit(Logics.Instance.BulletPower);
             }
         }
     }

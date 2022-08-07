@@ -10,12 +10,16 @@ ScriptsOnlyBuild:
     - InputController
     - Logics
     - ObjPool
+    - TextFlicker
+    - TitleBG
+    - TitleScene
     - itemPowerUp
     - itemSpeedUp
     Unity.2D.Animation.Editor.dll:
     - UnityEditor.U2D.Animation.BoneGizmo
     Unity.2D.IK.Editor.dll:
     - UnityEditor.U2D.IK.IKEditorManager
+    - UnityEditor.U2D.IK.IKGizmos
     Unity.2D.PixelPerfect.dll:
     - UnityEngine.U2D.PixelPerfectCamera
     Unity.2D.Tilemap.Editor.dll:
@@ -28,6 +32,8 @@ ScriptsOnlyBuild:
     - UnityEditor.Tilemaps.TilemapPrefabStageHelper
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
+    Unity.Timeline.Editor.dll:
+    - TimelineProjectSettings
     UnityEditor.Graphs.dll:
     - UnityEditor.Graphs.AnimationBlendTree.Graph
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
@@ -51,7 +57,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.Slider
     - UnityEngine.UI.Text
   sceneClasses:
-    Assets/Scenes/SampleScene.unity:
+    Assets/Scenes/Main.unity:
     - Class: 1
       Script: {instanceID: 0}
     - Class: 4
@@ -69,8 +75,6 @@ ScriptsOnlyBuild:
     - Class: 43
       Script: {instanceID: 0}
     - Class: 48
-      Script: {instanceID: 0}
-    - Class: 49
       Script: {instanceID: 0}
     - Class: 50
       Script: {instanceID: 0}
@@ -97,45 +101,116 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1488}
     - Class: 114
-      Script: {instanceID: 1554}
+      Script: {instanceID: 1490}
     - Class: 114
-      Script: {instanceID: 1612}
+      Script: {instanceID: 1492}
     - Class: 114
-      Script: {instanceID: 2454}
+      Script: {instanceID: 1494}
     - Class: 114
-      Script: {instanceID: 2682}
+      Script: {instanceID: 1560}
     - Class: 114
-      Script: {instanceID: 2918}
+      Script: {instanceID: 1618}
     - Class: 114
-      Script: {instanceID: 3226}
+      Script: {instanceID: 2460}
     - Class: 114
-      Script: {instanceID: 5146}
+      Script: {instanceID: 2688}
     - Class: 114
-      Script: {instanceID: 5438}
+      Script: {instanceID: 3230}
     - Class: 114
-      Script: {instanceID: 5736}
+      Script: {instanceID: 5150}
     - Class: 114
-      Script: {instanceID: 5840}
+      Script: {instanceID: 5738}
     - Class: 114
-      Script: {instanceID: 5980}
+      Script: {instanceID: 5842}
     - Class: 114
-      Script: {instanceID: 6188}
+      Script: {instanceID: 5982}
     - Class: 114
       Script: {instanceID: 6746}
     - Class: 114
-      Script: {instanceID: 7120}
+      Script: {instanceID: 7122}
     - Class: 114
-      Script: {instanceID: 7376}
+      Script: {instanceID: 7378}
     - Class: 114
-      Script: {instanceID: 7934}
+      Script: {instanceID: 7936}
     - Class: 114
-      Script: {instanceID: 8178}
+      Script: {instanceID: 8180}
     - Class: 114
-      Script: {instanceID: 8280}
+      Script: {instanceID: 8282}
     - Class: 114
-      Script: {instanceID: 8482}
+      Script: {instanceID: 8484}
     - Class: 114
-      Script: {instanceID: 8526}
+      Script: {instanceID: 8528}
+    - Class: 115
+      Script: {instanceID: 0}
+    - Class: 128
+      Script: {instanceID: 0}
+    - Class: 157
+      Script: {instanceID: 0}
+    - Class: 196
+      Script: {instanceID: 0}
+    - Class: 198
+      Script: {instanceID: 0}
+    - Class: 199
+      Script: {instanceID: 0}
+    - Class: 212
+      Script: {instanceID: 0}
+    - Class: 213
+      Script: {instanceID: 0}
+    - Class: 222
+      Script: {instanceID: 0}
+    - Class: 223
+      Script: {instanceID: 0}
+    - Class: 224
+      Script: {instanceID: 0}
+    Assets/Scenes/Title.unity:
+    - Class: 1
+      Script: {instanceID: 0}
+    - Class: 4
+      Script: {instanceID: 0}
+    - Class: 20
+      Script: {instanceID: 0}
+    - Class: 21
+      Script: {instanceID: 0}
+    - Class: 23
+      Script: {instanceID: 0}
+    - Class: 28
+      Script: {instanceID: 0}
+    - Class: 33
+      Script: {instanceID: 0}
+    - Class: 43
+      Script: {instanceID: 0}
+    - Class: 48
+      Script: {instanceID: 0}
+    - Class: 49
+      Script: {instanceID: 0}
+    - Class: 64
+      Script: {instanceID: 0}
+    - Class: 81
+      Script: {instanceID: 0}
+    - Class: 104
+      Script: {instanceID: 0}
+    - Class: 114
+      Script: {instanceID: 1488}
+    - Class: 114
+      Script: {instanceID: 1490}
+    - Class: 114
+      Script: {instanceID: 1492}
+    - Class: 114
+      Script: {instanceID: 2688}
+    - Class: 114
+      Script: {instanceID: 3230}
+    - Class: 114
+      Script: {instanceID: 5842}
+    - Class: 114
+      Script: {instanceID: 6746}
+    - Class: 114
+      Script: {instanceID: 6754}
+    - Class: 114
+      Script: {instanceID: 8282}
+    - Class: 114
+      Script: {instanceID: 30190}
+    - Class: 114
+      Script: {instanceID: 30324}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -161,6 +236,24 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
     className: Image
+  - hash:
+      serializedVersion: 2
+      Hash: ae83e830e7a90c0aff918c4c2e520825
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UI
+    className: GraphicRaycaster
+  - hash:
+      serializedVersion: 2
+      Hash: a1aa98c78061c6f03a8c124cda576e67
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UI
+    className: CanvasScaler
+  - hash:
+      serializedVersion: 2
+      Hash: 21a9c6dbf300fc1f6dc15ca7e2c39a37
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UI
+    className: Slider
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -359,12 +452,6 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.TestRunner.dll
     namespaceName: UnityEngine.TestRunner.Utils
     className: TestRunCallbackListener
-  - hash:
-      serializedVersion: 2
-      Hash: ae83e830e7a90c0aff918c4c2e520825
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: GraphicRaycaster
   - hash:
       serializedVersion: 2
       Hash: f40fedccd4adbc76605bea6d67537e4b
@@ -715,12 +802,6 @@ ScriptsOnlyBuild:
     className: GlobalMessageListener
   - hash:
       serializedVersion: 2
-      Hash: 21a9c6dbf300fc1f6dc15ca7e2c39a37
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: Slider
-  - hash:
-      serializedVersion: 2
       Hash: 3164bc883ff663a5cdb32d1ef7e7c0c5
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.UI
@@ -775,7 +856,7 @@ ScriptsOnlyBuild:
     className: Text
   - hash:
       serializedVersion: 2
-      Hash: 25bc399710af1b911d883f69b5406e89
+      Hash: e84fcb541be6e94e678b8e2826e11cf6
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: EnemyBoss
@@ -785,12 +866,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.State.dll
     namespaceName: Unity.VisualScripting
     className: StateGraphAsset
-  - hash:
-      serializedVersion: 2
-      Hash: a1aa98c78061c6f03a8c124cda576e67
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: CanvasScaler
   - hash:
       serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
@@ -821,6 +896,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.EventSystems
     className: StandaloneInputModule
+  - hash:
+      serializedVersion: 2
+      Hash: c87da72496759c314d3c36d884d5d758
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: TitleBG
   - hash:
       serializedVersion: 2
       Hash: f7858108331b563fb41b80b729297acd
@@ -919,7 +1000,7 @@ ScriptsOnlyBuild:
     className: RuleTile
   - hash:
       serializedVersion: 2
-      Hash: d7e7c694e660b6206d0c31d5617e5947
+      Hash: 8551f5a2cdb1af7d60afa12e75f0a9ea
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: AudioManager
@@ -1099,7 +1180,7 @@ ScriptsOnlyBuild:
     className: SpriteLibrarySourceAsset
   - hash:
       serializedVersion: 2
-      Hash: 843bfdbabe6bfb2a6e5a6f3a88fd29ad
+      Hash: 543b50ccdf4ddac3975b46432ae4c522
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Logics
@@ -1145,7 +1226,20 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
     className: UnityOnSliderValueChangedMessageListener
+  - hash:
+      serializedVersion: 2
+      Hash: 6ec7df442e6f520cbe5b0725736768d2
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: TextFlicker
+  - hash:
+      serializedVersion: 2
+      Hash: bbeaaee894146ba55d079f439a83da85
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: TitleScene
   platform: 19
   scenePathNames:
-  - Assets/Scenes/SampleScene.unity
-  playerPath: D:/Study/HelloDaejun/FlyGame_Build/Fly! Little Girl!.exe
+  - Assets/Scenes/Title.unity
+  - Assets/Scenes/Main.unity
+  playerPath: D:/Dev/UNITY_STUDY(KNOU)/Fly_LittleGirl/Fly! Little Girl!.exe

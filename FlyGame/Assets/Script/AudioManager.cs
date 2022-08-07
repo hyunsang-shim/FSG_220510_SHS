@@ -20,6 +20,7 @@ public class AudioManager : MonoBehaviour
     public AudioClip clipPowerUp;
     public AudioClip clipSpeedUp;
     public AudioClip clipExtraLife;
+    public AudioClip clipMenuSelect;
 
     private static AudioManager instance = null;
     public static AudioManager Instance
@@ -38,14 +39,12 @@ public class AudioManager : MonoBehaviour
 
         audSrc = GetComponent<AudioSource>();
 
-        audSrc.clip = BGMs[0];
         audSrc.volume = 1f;
         audSrc.loop = true;
     }
 
     private void Start()
     {
-        audSrc.Play();
     }
 
     public void PlaySFX(string sfxName)
@@ -72,6 +71,9 @@ public class AudioManager : MonoBehaviour
                 break;
             case "BonusLife":
                 audSrc.PlayOneShot(clipExtraLife);
+                break;
+            case "MenuSelect":
+                audSrc.PlayOneShot(clipMenuSelect); 
                 break;
         }
     }

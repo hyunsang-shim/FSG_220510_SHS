@@ -33,10 +33,11 @@ public class Logics : MonoBehaviour
     public float baseSpeed;   // 기본 기체 이동 속도    
     bool isBossAppear = false;
     int highScore;
-    public int firstBonusLifeScore = 50000;
-    public int SecondBonusLifeScore = 100000;
+    public int firstBonusLifeScore;
+    public int secondBonusLifeScore;
     bool gotFirstLifeBonus;
     bool gotSecondLifeBonus;
+    bool isPlayerInvaluneable = false;
 
     [Header("밸런스 요소 (디버그용)")]
     public int defaultEnemyHP_Small;
@@ -96,6 +97,7 @@ public class Logics : MonoBehaviour
     {
         if (instance == null) instance = this;
 
+        isPlayerInvaluneable = false;
 
         spawnList = new List<Spawner>();
 
@@ -411,8 +413,8 @@ public class Logics : MonoBehaviour
                     GameObject bulletRLv_2 = objPool.GetObject("playerBulletsA");
                     bulletLLv_2.transform.position = playerShotPoint + Vector3.left * 0.15f;
                     bulletRLv_2.transform.position = playerShotPoint + Vector3.right * 0.15f;
-                    bulletLLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletRLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
+                    bulletLLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower/2), 1, false);
+                    bulletRLv_2.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower/2), 1, false);
                     break;
                 case 3:     //      \ | /
                     GameObject bulletLLv_3 = objPool.GetObject("playerBulletsA");
@@ -421,9 +423,9 @@ public class Logics : MonoBehaviour
                     bulletLLv_3.transform.position = playerShotPoint + Vector3.left * 0.2f;
                     bulletMLv_3.transform.position = playerShotPoint;
                     bulletRLv_3.transform.position = playerShotPoint + Vector3.right * 0.2f;
-                    bulletLLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
-                    bulletMLv_3.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletRLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * 10, 1, false);
+                    bulletLLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_3.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletRLv_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * (10 + BulletPower / 2), 1, false);
                     break; 
                     
                     //GameObject bulletLv_3 = objPool.GetObject("playerBulletsB");
@@ -446,12 +448,12 @@ public class Logics : MonoBehaviour
                     bulletMLv_4_2.transform.position = playerShotPoint + Vector3.right * 0.15f;
                     bulletRLv_4_1.transform.position = playerShotPoint + Vector3.right * 0.2f;
                     bulletRLv_4_2.transform.position = playerShotPoint + Vector3.right * 0.3f;
-                    bulletLLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
-                    bulletLLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
-                    bulletMLv_4_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletMLv_4_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletRLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * 10, 1, false);
-                    bulletRLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * 10, 1, false);
+                    bulletLLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletLLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_4_1.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_4_2.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletRLv_4_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletRLv_4_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * (10 + BulletPower / 2), 1, false);
                     break;
                 case 5:     //      \\ ㅁ //
                     GameObject bulletLLv_5_1 = objPool.GetObject("playerBulletsA");
@@ -464,11 +466,11 @@ public class Logics : MonoBehaviour
                     bulletMLv_5.transform.position = playerShotPoint;
                     bulletRLv_5_1.transform.position = playerShotPoint + Vector3.right * 0.2f;
                     bulletRLv_5_2.transform.position = playerShotPoint + Vector3.right * 0.3f;
-                    bulletLLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
-                    bulletLLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
-                    bulletMLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 3, false);
-                    bulletRLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * 10, 1, false);
-                    bulletRLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * 10, 1, false);
+                    bulletLLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletLLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_5.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 3, false);
+                    bulletRLv_5_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletRLv_5_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * (10 + BulletPower / 2), 1, false);
                     break;
                 case 6:     //      ㅁ ㅁ ㅁ
                     GameObject bulletLLv_6 = objPool.GetObject("playerBulletsB");
@@ -477,9 +479,9 @@ public class Logics : MonoBehaviour
                     bulletLLv_6.transform.position = playerShotPoint + Vector3.left * 0.2f;
                     bulletMLv_6.transform.position = playerShotPoint;
                     bulletRLv_6.transform.position = playerShotPoint + Vector3.right * 0.2f;
-                    bulletLLv_6.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
-                    bulletMLv_6.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletRLv_6.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * 10, 1, false);
+                    bulletLLv_6.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_6.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletRLv_6.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * (10 + BulletPower / 2), 1, false);
                     break;
                 case 7:     //      ㅁㅁ ㅁㅁ ㅁㅁ
                     GameObject bulletLLv_7_1 = objPool.GetObject("playerBulletsB");
@@ -494,12 +496,12 @@ public class Logics : MonoBehaviour
                     bulletMLv_7_2.transform.position = playerShotPoint + Vector3.right * 0.25f;
                     bulletRLv_7_1.transform.position = playerShotPoint + Vector3.right * 0.3f;
                     bulletRLv_7_2.transform.position = playerShotPoint + Vector3.right * 0.35f;
-                    bulletLLv_7_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
-                    bulletLLv_7_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
-                    bulletMLv_7_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletMLv_7_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletRLv_7_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * 10, 1, false);
-                    bulletRLv_7_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * 10, 1, false);
+                    bulletLLv_7_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletLLv_7_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_7_1.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_7_2.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletRLv_7_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletRLv_7_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * (10 + BulletPower / 2), 1, false);
                     break;
                 case 8:     //      \ㅁㅁ\ ㅁㅁ /ㅁㅁ/
                     GameObject bulletLLv_8_1 = objPool.GetObject("playerBulletsA");
@@ -522,16 +524,16 @@ public class Logics : MonoBehaviour
                     bulletRLv_8_2.transform.position = playerShotPoint + Vector3.right * 0.3f;
                     bulletRLv_8_3.transform.position = playerShotPoint + Vector3.right * 0.35f;
                     bulletRLv_8_4.transform.position = playerShotPoint + Vector3.right * 0.35f;
-                    bulletLLv_8_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.19f)), 1).normalized * 10, 1, false);
-                    bulletLLv_8_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.16f)), 1).normalized * 10, 1, false);
-                    bulletLLv_8_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
-                    bulletLLv_8_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
-                    bulletMLv_8_1.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletMLv_8_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletRLv_8_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * 10, 1, false);
-                    bulletRLv_8_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * 10, 1, false);
-                    bulletRLv_8_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.16f), 1).normalized * 10, 1, false);
-                    bulletRLv_8_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.19f), 1).normalized * 10, 1, false);
+                    bulletLLv_8_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.19f)), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletLLv_8_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.16f)), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletLLv_8_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletLLv_8_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_8_1.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_8_2.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletRLv_8_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletRLv_8_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletRLv_8_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.16f), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletRLv_8_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.19f), 1).normalized * (10 + BulletPower / 2), 1, false);
                     break;
                 case 9:     //      \ㅁㅁ\ \ㅁㅁ/ /ㅁㅁ/
                     GameObject bulletLLv_9_1 = objPool.GetObject("playerBulletsA");
@@ -558,18 +560,18 @@ public class Logics : MonoBehaviour
                     bulletRLv_9_2.transform.position = playerShotPoint + Vector3.right * 0.3f;
                     bulletRLv_9_3.transform.position = playerShotPoint + Vector3.right * 0.35f;
                     bulletRLv_9_4.transform.position = playerShotPoint + Vector3.right * 0.35f;
-                    bulletLLv_9_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.19f)), 1).normalized * 10, 1, false);
-                    bulletLLv_9_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.16f)), 1).normalized * 10, 1, false);
-                    bulletLLv_9_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * 10, 1, false);
-                    bulletLLv_9_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * 10, 1, false);
-                    bulletMLv_9_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.05f)), 1).normalized * 10, 1, false);
-                    bulletMLv_9_2.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletMLv_9_3.GetComponent<Bullet>().SetBullet(Vector2.up * 10, 1, false);
-                    bulletMLv_9_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.05f), 1).normalized * 10, 1, false);
-                    bulletRLv_9_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * 10, 1, false);
-                    bulletRLv_9_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * 10, 1, false);
-                    bulletRLv_9_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.16f), 1).normalized * 10, 1, false);
-                    bulletRLv_9_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.19f), 1).normalized * 10, 1, false);
+                    bulletLLv_9_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.19f)), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletLLv_9_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.16f)), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletLLv_9_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.13f)), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletLLv_9_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.10f)), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletMLv_9_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * (-0.05f)), 1).normalized * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_9_2.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower/2), 1, false);
+                    bulletMLv_9_3.GetComponent<Bullet>().SetBullet(Vector2.up * (10 + BulletPower / 2), 1, false);
+                    bulletMLv_9_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.05f), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletRLv_9_1.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.10f), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletRLv_9_2.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.13f), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletRLv_9_3.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.16f), 1).normalized * (10 + BulletPower/2), 1, false);
+                    bulletRLv_9_4.GetComponent<Bullet>().SetBullet(new Vector2(Mathf.Sin(Mathf.PI * 0.19f), 1).normalized * (10 + BulletPower / 2), 1, false);
                     break;
             }
 
@@ -637,16 +639,18 @@ public class Logics : MonoBehaviour
             highScore = score;
         }
 
-        if(!gotFirstLifeBonus && score >= 50000)
+        if(!gotFirstLifeBonus && (score >= firstBonusLifeScore))
         {
             gotFirstLifeBonus = true;
             life += 1;
+            AudioManager.Instance.PlaySFX("BonusLife");
             UpdateLifeCount();
         }
-        else if (!gotSecondLifeBonus && score >= 100000)
+        else if (!gotSecondLifeBonus && (score >= secondBonusLifeScore))
         {
             gotSecondLifeBonus = true;
             life += 1;
+            AudioManager.Instance.PlaySFX("BonusLife");
             UpdateLifeCount();
         }
     }
@@ -671,43 +675,60 @@ public class Logics : MonoBehaviour
         player.SetActive(true);
         player.GetComponent<InputController>().isHit = false;
         curShotDelay = 0;
+        isPlayerInvaluneable = false;
     }
-
 
     public void PlayerHit()
     {
-        AudioManager.Instance.PlaySFX("PLAYER_DEATH");
+        if (!isPlayerInvaluneable)
+        {
+            AudioManager.Instance.PlaySFX("PLAYER_DEATH");
 
-        GameObject playerDieFX_1 = new GameObject();
-        GameObject playerDieFX_2 = new GameObject();
-        GameObject playerDieFX_3 = new GameObject();
-        GameObject playerDieFX_4 = new GameObject();
-        playerDieFX_4.transform.position 
-            = playerDieFX_3.transform.position 
-            = playerDieFX_2.transform.position 
-            = playerDieFX_1.transform.position 
-            = player.transform.position;
+            GameObject playerDieFX_1 = objPool.GetObject("explosion_Medium");
+            GameObject playerDieFX_2 = objPool.GetObject("explosion_Medium");
+            GameObject playerDieFX_3 = objPool.GetObject("explosion_Medium");
+            GameObject playerDieFX_4 = objPool.GetObject("explosion_Medium");
 
-        playerDieFX_1 = objPool.GetObject("explosion_Medium");
-        playerDieFX_2 = objPool.GetObject("explosion_Medium");
-        playerDieFX_3 = objPool.GetObject("explosion_Medium");
-        playerDieFX_4 = objPool.GetObject("explosion_Medium");
+            playerDieFX_4.transform.position = player.transform.position;
+            playerDieFX_3.transform.position = player.transform.position;
+            playerDieFX_2.transform.position = player.transform.position;
+            playerDieFX_1.transform.position = player.transform.position;
 
-        playerDieFX_1.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 1) * 2, ForceMode2D.Impulse);
-        playerDieFX_2.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 1) * 2, ForceMode2D.Impulse);
-        playerDieFX_3.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, -1) * 2, ForceMode2D.Impulse);
-        playerDieFX_4.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, -1) * 2, ForceMode2D.Impulse);
+            Debug.Log($"Before AddForce.=============");
+            Debug.Log($"player.transform.position: {player.transform.position}");
+            Debug.Log($"playerDieFX_1.transform.position: {playerDieFX_1.transform.position}");
+            Debug.Log($"playerDieFX_2.transform.position: {playerDieFX_2.transform.position}");
+            Debug.Log($"playerDieFX_3.transform.position: {playerDieFX_3.transform.position}");
+            Debug.Log($"playerDieFX_4.transform.position: {playerDieFX_4.transform.position}");
 
-        life--;
-        isSlowed = false;
+            playerDieFX_1.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 1) * 2, ForceMode2D.Impulse);
+            playerDieFX_2.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 1) * 2, ForceMode2D.Impulse);
+            playerDieFX_3.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, -1) * 2, ForceMode2D.Impulse);
+            playerDieFX_4.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, -1) * 2, ForceMode2D.Impulse);
 
-        player.gameObject.SetActive(false);
+            playerDieFX_4.transform.position = player.transform.position;
+            playerDieFX_3.transform.position = player.transform.position;
+            playerDieFX_2.transform.position = player.transform.position;
+            playerDieFX_1.transform.position = player.transform.position;
 
-        if (life == 0)
-            GameOver();
-        else
-            RespawnPlayer();
+            Debug.Log($"After AddForce.=============");
+            Debug.Log($"player.transform.position: {player.transform.position}");
+            Debug.Log($"playerDieFX_1.transform.position: {playerDieFX_1.transform.position}");
+            Debug.Log($"playerDieFX_2.transform.position: {playerDieFX_2.transform.position}");
+            Debug.Log($"playerDieFX_3.transform.position: {playerDieFX_3.transform.position}");
+            Debug.Log($"playerDieFX_4.transform.position: {playerDieFX_4.transform.position}");
 
+            life--;
+            isSlowed = false;
+            isPlayerInvaluneable = true;
+
+            player.gameObject.SetActive(false);
+
+            if (life <= 0)
+                Invoke("GameOver", 1.5f);
+            else
+                RespawnPlayer();
+        }
         
     }
 
@@ -737,7 +758,6 @@ public class Logics : MonoBehaviour
         CheckHighScore();
         Time.timeScale = 1.0f;
         SceneManager.LoadScene(0);
-        SetCommonUI();
     }
 
     public void CallQuitMenu()
@@ -795,6 +815,7 @@ public class Logics : MonoBehaviour
 
 
         CommonUISet.SetActive(true);
+        AudioManager.Instance.ChangeBGM(1);
     }
     void CheckHighScore()
     {
@@ -865,7 +886,7 @@ public class Logics : MonoBehaviour
         if (!isBossAppear && !isBossPhase2)
         {
             isBossAppear = true;
-            AudioManager.Instance.ChangeBGM(1);
+            AudioManager.Instance.ChangeBGM(2);
             GameObject boss = objPool.GetObject("boss");
         }
 

@@ -232,7 +232,7 @@ public class Enemy : MonoBehaviour
     }
 
 
-    void OnHit(int dmg)
+    public void OnHit(int dmg)
     {
         if(valunable)
             HP -= dmg;

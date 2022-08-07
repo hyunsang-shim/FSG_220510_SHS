@@ -116,7 +116,7 @@ public class EnemyBoss : MonoBehaviour
         }
     }
 
-    private void Hit(int _dmg)
+    public void Hit(int _dmg)
     {
         curHP -= _dmg;
         Logics.Instance.UpdateBossHP(curHP);
@@ -350,7 +350,7 @@ public class EnemyBoss : MonoBehaviour
 
     public void SetBossPhase2()
     {
-        AudioManager.Instance.ChangeBGM(2);
+        AudioManager.Instance.ChangeBGM(3);
         coolTime = coolTime * 0.75f;
         speed = speed * 1.35f;
         shotDelay = shotDelay * 0.4f;
