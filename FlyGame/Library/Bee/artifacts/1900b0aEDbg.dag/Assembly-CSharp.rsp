@@ -353,7 +353,9 @@
 "Assets/Script/ObjPool.cs"
 "Assets/Script/Spawner.cs"
 "Assets/Script/TestScript.cs"
+"Assets/Script/TextFlicker.cs"
 "Assets/Script/TitleBG.cs"
+"Assets/Script/TitleScene.cs"
 -langversion:8.0
 
 /deterministic

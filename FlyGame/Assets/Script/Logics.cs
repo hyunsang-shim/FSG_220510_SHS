@@ -102,8 +102,8 @@ public class Logics : MonoBehaviour
 
         UIRoot = FindObjectOfType<Canvas>();
 
-        shotDelay = 0.7f;
-        maxShotDelay = 0.35f;
+        shotDelay = 0.6f;
+        maxShotDelay = 0.3f;
         SetCommonUI();
         ReadSpawnData();
         ReadEnemyMovePatterns();
@@ -251,8 +251,8 @@ public class Logics : MonoBehaviour
             }
 
             patternCount++;
-
         }
+        stringReader.Close();
     }
 
     void SpawnEnemy()
@@ -584,12 +584,15 @@ public class Logics : MonoBehaviour
         Enemy e = _enemy.GetComponent<Enemy>();
         if (!_isDead)
         {
-            _enemy.gameObject.SetActive(false);
             string enemySize = e.GetSize();
             AudioManager.Instance.PlaySFX("EnemyDeath_" + enemySize);
             AddScore(_score);
-            GameObject fx = objPool.GetObject("explosion_" + enemySize);
+            GameObject fx = new GameObject();
+            fx.gameObject.SetActive(false);
+            fx = objPool.GetObject("explosion_" + enemySize);            
             fx.transform.position = e.transform.position;
+            fx.SetActive(true);
+            _enemy.gameObject.SetActive(false);
             aliveEnemies--;                    
         }
     }
@@ -675,24 +678,30 @@ public class Logics : MonoBehaviour
     {
         AudioManager.Instance.PlaySFX("PLAYER_DEATH");
 
-        GameObject playerDieFX_1 = objPool.GetObject("explosion_Medium");
-        playerDieFX_1.transform.position = player.transform.position;
+        GameObject playerDieFX_1 = new GameObject();
+        GameObject playerDieFX_2 = new GameObject();
+        GameObject playerDieFX_3 = new GameObject();
+        GameObject playerDieFX_4 = new GameObject();
+        playerDieFX_4.transform.position 
+            = playerDieFX_3.transform.position 
+            = playerDieFX_2.transform.position 
+            = playerDieFX_1.transform.position 
+            = player.transform.position;
+
+        playerDieFX_1 = objPool.GetObject("explosion_Medium");
+        playerDieFX_2 = objPool.GetObject("explosion_Medium");
+        playerDieFX_3 = objPool.GetObject("explosion_Medium");
+        playerDieFX_4 = objPool.GetObject("explosion_Medium");
+
         playerDieFX_1.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, 1) * 2, ForceMode2D.Impulse);
-
-        GameObject playerDieFX_2 = objPool.GetObject("explosion_Medium");
-        playerDieFX_2.transform.position = player.transform.position;
         playerDieFX_2.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 1) * 2, ForceMode2D.Impulse);
-
-        GameObject playerDieFX_3 = objPool.GetObject("explosion_Medium");
-        playerDieFX_3.transform.position = player.transform.position;
         playerDieFX_3.GetComponent<Rigidbody2D>().AddForce(new Vector2(-1, -1) * 2, ForceMode2D.Impulse);
-
-        GameObject playerDieFX_4 = objPool.GetObject("explosion_Medium");
-        playerDieFX_4.transform.position = player.transform.position;
         playerDieFX_4.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, -1) * 2, ForceMode2D.Impulse);
 
         life--;
         isSlowed = false;
+
+        player.gameObject.SetActive(false);
 
         if (life == 0)
             GameOver();
@@ -716,8 +725,8 @@ public class Logics : MonoBehaviour
     {
         CheckHighScore();
         CommonUISet.SetActive(false);
-        highScoreTextOnGameOver.text = $"HighScore: {highScore}";
-        scoreTextOnGameOver.text = $"Your Score: {score}";
+        highScoreTextOnGameOver.text = string.Format("High Score: {0:n0}", highScore);
+        scoreTextOnGameOver.text = string.Format("Your Score: {0:n0}", score);
         gameClearSet.SetActive(true);
         Time.timeScale = 0f;
         
@@ -781,7 +790,9 @@ public class Logics : MonoBehaviour
         string line = stringReader.ReadLine();
         Debug.Log(line);
         highScore = int.Parse(line);
-        highScoreText.text = $"HighScore: {highScore}";
+        highScoreText.text = string.Format("High Score: {0:n0}", highScore);
+        stringReader.Close();
+
 
         CommonUISet.SetActive(true);
     }
@@ -829,7 +840,7 @@ public class Logics : MonoBehaviour
     public void AddSpeedUp()
     {
         baseSpeed += 0.35f;
-        shotDelay -= 0.09f;
+        shotDelay -= 0.05f;
 
         if (baseSpeed > 9)
             baseSpeed = 9;

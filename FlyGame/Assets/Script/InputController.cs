@@ -92,7 +92,7 @@ public class InputController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
-        if (collision.gameObject.tag == "Border")
+        if (collision.CompareTag("Border"))
         {
             switch (collision.gameObject.name)
             {
@@ -111,13 +111,22 @@ public class InputController : MonoBehaviour
             }
         }
 
-        if (collision.gameObject.tag == "Enemy" || collision.gameObject.tag == "EnemyBullet")
+        if (collision.CompareTag("Enemy") || collision.CompareTag("EnemyBullet"))
         {
             if (!isHit)
             {
                 isHit = true;
                 Logics.Instance.PlayerHit();
                 collision.gameObject.SetActive(false);
+            }
+        }
+
+        if(collision.gameObject.CompareTag("EnemyBoss"))
+        {
+            if (!isHit)
+            {
+                isHit = true;
+                Logics.Instance.PlayerHit();
                 gameObject.SetActive(false);
             }
         }
